@@ -18,7 +18,7 @@ public class Hsmw{
 
 
     try{
-      URLObj = new URL("https://start.hs-mittweida.de ");
+      URLObj = new URL("https://start.hs-mittweida.de");
       con = URLObj.openConnection();
       con.setDoOutput(true);
 
@@ -35,15 +35,17 @@ public class Hsmw{
     File f = null;
 
     try{
+
       BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()));
-      writer.write("j_username="+username+"&j_password="+password+"&_eventId_proceed=submit");
+      writer.write("j_username="+username+"&j_password="+password+"submit=&_eventId_proceed");
       writer.close();
       BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
       f = new File("html.txt");
+      FileWriter fWriter = new FileWriter(f);
       String lineRead = "";
       while((lineRead = reader.readLine())!= null){
-        System.out.println(lineRead);
+        fWriter.write(lineRead);
       }
       reader.close();
     }catch(Exception ex){
