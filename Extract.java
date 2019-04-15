@@ -1,6 +1,5 @@
 public class Extract{
   public static String studienElement(String snippet){
-    System.out.println(snippet);
     snippet = snippet.substring(snippet.indexOf('>', snippet.indexOf("pageLoad")));
     snippet = snippet.substring(1,snippet.indexOf('<'));
     return snippet;
