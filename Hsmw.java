@@ -1,4 +1,4 @@
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.io.*;
 import java.net.*;
 //Diese Klasse verwaltet alle Operationen mit der HSMW Webseite
@@ -8,11 +8,6 @@ public class Hsmw{
   private static URL URLObj;
   private static URLConnection con;
 
-  public static HashMap<String, Double> getMarks(){
-    HashMap<String, Double> noten = new HashMap<String, Double>();
-
-    return noten;
-  }
   //private static void login(String username, String password){
   public static void login(String username, String password){
 
@@ -48,6 +43,7 @@ public class Hsmw{
         fWriter.write(lineRead);
       }
       reader.close();
+      fWriter.close();
     }catch(Exception ex){
       ex.printStackTrace();
     }
@@ -57,5 +53,30 @@ public class Hsmw{
   }
   private static void logout(){
 
+  }
+
+  public static ArrayList extractScores(InputStream input){
+    ArrayList<Score> scores = new ArrayList<Score>();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+    String line = "";
+    int currentScore = 0;
+    try{
+      while((line = reader.readLine()) != null){
+        if(line.contains("EmMNR Element") && !line.contains("th")){
+          scores.add(new Score());
+          currentScore = scores.size() - 1;
+          scores.get(currentScore).setStudienElement(Extract.studienElement(line));
+        }else if(line.contains("EmSE ElementName") && !line.contains("th")){
+          scores.get(currentScore).setSubject(Extract.subject(line));
+        }else if(line.contains("Em200 SveStatus") && !line.contains("th")){
+          scores.get(currentScore).setScore(Extract.score(line));
+        }else if(line.contains("Em150 Versuch SveStatus") && !line.contains("th")){
+          scores.get(currentScore).setAttempts(Extract.attempts(line));
+        }
+      }
+    }catch(IOException e){
+      e.printStackTrace();
+    }
+    return scores;
   }
 }

@@ -1,0 +1,352 @@
+/*------------------------------------------------------------------------------------------
+Copyright 2003-2014 Falk Neuner, nsoft.de
+Ausführung, Bearbeitung, Unterlizensierung nur mit ausdrücklicher Erlaubnis des Urhebers
+/*------------------------------------------------------------------------------------------
+Usage: Stil HSMW 2016
+Model: Stil/5429
+/*------------------------------------------------------------------------------------------
+basiert auf HDS
+------------------------------------------------------------------------------------------*/
+/**/
+@import url(../../styles/default/contact.css);
+@import url(../../styles/default/normal.css);
+@import url(../../styles/default/cells-16.4.css);
+
+/*scrollbar immer sichtbar, bei ein/ausblenden horizonales hin/her weg*/
+html
+{
+ 	overflow-y: scroll;
+}
+body 
+{
+	font-family: Arial, Verdana, Geneva, Helvetica, sans-serif;
+}
+
+body div.head
+{
+	background-image: url(../../styles/hsmw2014/kopfgrafik99.jpg);
+	background-position: top;
+	background-color: #ffffff;
+}
+
+/*interner Link*/
+a
+{
+	color: #777777;
+}
+
+/*externer Link*/
+a.extern
+{
+    color: #B6181F;
+	color: #296bb7;
+}
+
+/*sys_glyphicons*/
+span.glyphicon,
+span.halflings
+{
+	color: #296bb7;
+}
+
+/*layoutTicker*/
+#layoutTicker div.CmsCell span.Icons span.glyphicon,
+#layoutTicker div.CmsCell span.Icons span.halflings
+{
+	color: #ffffff;
+	margin-right: 2px !important;
+}
+#layoutTicker div.CmsCell td.SysPaging span.glyphicon,
+#layoutTicker div.CmsCell td.SysPaging span.halflings
+{
+	/*Invers ohne Rahmen*/
+	border: 0;
+	color: #c0c0c0;
+	background: none !important;
+	font-size: 9pt !important;
+}
+#layoutTicker div.CmsCell td.SysPaging a span.glyphicon,
+#layoutTicker div.CmsCell td.SysPaging a span.halflings
+{ 
+	/*Invers ohne Rahmen*/
+	background: none !important;
+	color: #ffffff !important;
+	border: 0 !important;
+}
+#layoutTicker div.CmsCell td.SysPaging span.glyphicon-triangle-left,
+#layoutTicker div.CmsCell td.SysPaging span.glyphicon-triangle-right,
+#layoutTicker div.CmsCell td.SysPaging span.halflings-triangle-left,
+#layoutTicker div.CmsCell td.SysPaging span.halflings-triangle-right
+{
+	/*Ausrichtung optimieren*/
+	font-size: 10pt !important;
+	padding-bottom: 1px !important;
+	padding-top: 1px !important;
+}
+#layoutTicker div.CmsCell td.SysPaging span.glyphicon-triangle-right,
+#layoutTicker div.CmsCell td.SysPaging span.halflings-triangle-right
+{
+	/*Ausrichtung optimieren*/
+	margin: 0 1px 0 2px !important;
+}
+
+/*Bullets*/
+.content ol 
+{
+	margin-left: 18px;	
+}
+.content ul,
+.right ul 
+{
+	list-style-type: none;
+}
+.content ul li,
+.content ul ul li,
+.right ul li 
+{
+	list-style-image: url('bullet-quad.png'); 
+	margin: 0 0 0 -15px;
+	padding: 0 0 0 0px;
+}
+.content ul,
+.right ul 
+{
+	/*padding-left: 5px;*/
+	margin: 2px 0 7px 0;
+	padding: 0 0 0 30px;
+}
+
+/*Überschriften*/
+body div.normal div.top div.banner h1  
+{
+    color: #296bb7;
+}
+
+/*Navigation*/
+p.SysButtonTopLine .goup
+{ 
+	display: none;
+}
+p.ControlsTopLinkLine .goup
+{ 
+	display: none;
+}
+p.ControlsTopLinkLine a
+{ 
+	/*text-decoration: none;*/
+}
+p.ControlsTopLinkLine font
+{ 
+	margin-bottom: 3px;
+}
+
+/*Meldungen*/
+body div.left p.Wichtig
+{
+	color: #ffffff;
+	background: #B6181F;
+	background-image: none;
+	padding: 3px 5px 3px 5px;
+	border-radius: 3px;
+}
+body div.left p.Hinweis,
+body div.right p.Hinweis
+{
+	color: #ffffff;
+	background: #648c1c;
+	background-image: none;
+	padding: 3px 5px 3px 5px;
+	border-radius: 3px;
+}
+body div.left p.Wichtig a,
+body div.left p.Hinweis a
+{
+	color: #ffffff;
+}
+
+/*---------------------------------------------------------------------------------------------
+SysTabControl
+-----------------------------------------------------------------------------------------------*/
+/*WebTabs $page_force_current Tabs ausblenden (appl.start.htm)*/
+div.HideTabs div.SysTabControl 
+{
+	display: none;
+}
+div.SysTabControl1_sel,
+div.SysTabControl2_sel,
+div.SysTabControl3_sel
+{
+	background: #005B9A;
+}
+div.SysTabControlF,
+div.SysTabControl
+{		
+	border-color: #005B9A;
+}
+
+/*HisSvsGrid*/
+table.HisSvsGrid .PsaAktAnz,
+table.HisSvsGrid .PsaBesAnz,
+table.HisSvsGrid .PsaBesNds,
+table.HisSvsGrid .PsaZusAnz,
+table.HisSvsGrid .PsaFreAnz
+{
+	display: none;
+}
+
+/*AppGrid lange MNR*/
+table.AppGrid td.EmMNR,
+table.AppGrid th.EmMNR
+{
+	width: 8em;min-width: 8em;max-width: 8em;
+}
+
+/*KplKursGrid SGR + lange MNR + Fußnoten: ZM17wT-M 2016.08W232 71)71)74) */
+table.KplKursGrid th.Gruppen,
+table.KplKursGrid td.Gruppen
+{
+	padding-right: 0.25em; width: 16.75em;min-width: 16.75em;max-width: 16.75em;
+}
+
+/*SapTreeSLnoten Farbe Leistungsstatus vorerst ausblenden
+div.normal table.SapTreeSLnoten tr.B td.note { background: #F7F7CD; }
+div.normal table.SapTreeSLnoten tr.NB td.note { background: #F7F7CD; }
+div.normal table.SapTreeSLnoten tr.ENB td.note { background: #F7F7CD; }
+*/
+
+/*HisAplList*/
+div.popup table.HisAplList
+{
+	width: 100%;
+	min-width: 100%;
+	max-width: 100%;
+}
+table.HisAplList td.Vektor,
+table.HisAplList th.Vektor
+{
+	width: 14.75em;min-width: 14.75em;max-width: 14.75em; 
+}
+
+/*FOM*/
+div.FomProjectsList .ProjectStatus { display:none; } 
+
+/*------------------------------------------------------------------------------------------
+CmsCell
+------------------------------------------------------------------------------------------*/
+.CellFooter
+{
+	font-size: 90%;
+}
+
+/*CmsTiny2004Cell*/
+div.CmsTiny2004Cell strike
+{
+	display: none;
+}
+div.CmsTiny2004Cell
+{
+	line-height: 1.2em;
+}
+
+.SysTabControl a,
+.SysButtonsBottom a,
+input.SysButtonsBottom,
+div.SysButtonsBottom span.SysButtonsBottom
+{
+	color: #296bb7;
+}
+
+/*hellgrau mit Rahmen*/
+div.right div.CmsCellLoader
+{
+	background-color: #f0f0f0; /*16.4*/
+	border: 1px solid #a0a0a0; /*16.4*/
+	padding: 5px 10px 5px 10px;
+}
+
+/*ohne Hintergrund und Rand*/
+div.right div.CmsInvitePerson,
+div.right div.QdeDocuments,
+div.right div.QdeQuestions,
+div.right div.QdeForum,
+div.right div.QdeBlog,
+div.right div.CmsFavorites,
+div.right div.QdeCurrentPersons
+{
+	background-image: none;
+	padding: 5px 5px 5px 5px;
+}
+div.right div.QdeDocuments
+{
+	background-image: none;
+	padding: 0 0 5px 0;
+}
+
+/*Meine Favoriten*/
+div.left div.CmsFavorites
+{
+	/*background-image: none;*/
+	background: url(../../styles/hsmw2014/bg-navi-functions.png) 0 0 no-repeat;
+	padding: 5px 0 5px 0px;
+}
+div.left table.CmsFavorites
+{
+	margin-top: 20px;
+	margin-bottom: 0;
+	border-bottom: 0;
+}
+div.left div.CmsFavorites td.L1
+{
+	padding-bottom: 3px;
+}
+div.left div.CmsFavorites .HtmlButton2
+{
+	margin-bottom: 3px;
+}
+
+
+/*kontextabhängige Benutzungshinweise (grüne Box)*/
+div.right .CmsPageContent { display: none; }
+body.FomPersonWizard table.CmsPageContent { display: table; }
+body.FomPersonWizard div.CmsPageContent { display: block; }
+body.ProductExplorer table.CmsPageContent { display: table; }
+body.ProductExplorer div.CmsPageContent { display: block; }
+body.ProductInfo table.CmsPageContent { display: table; }
+body.ProductInfo div.CmsPageContent { display: block; }
+div.right table.CmsPageContent div.CmsCellHelp { display: none; } /*passte hier nicht richtig hin*/
+
+/*seitenabhängige Modifikationen*/
+div.page6613 tr.startzeit div.DateControl input.EmTime { display: none !important; } /*Veranstaltung Start-uhrzeit unsichtbar*/
+div.page6613 .defaultSkin tr.mceLast { display: none; } /* 3.5.11 tinyMCE Statusbar entfernen Assistent */
+div.page6619 .defaultSkin tr.mceLast { display: none; } /* 3.5.11 tinyMCE Statusbar entfernen Personen */
+div.page6614 .defaultSkin tr.mceLast { display: none; } /* 3.5.11 tinyMCE Statusbar entfernen Projekte */
+div.page6615 .defaultSkin tr.mceLast { display: none; } /* 3.5.11 tinyMCE Statusbar entfernen Pubikationen */
+div.page6622 .defaultSkin tr.mceLast { display: none; } /* 3.5.11 tinyMCE Statusbar entfernen Veranstaltungen */
+div.page6616 table.SearchForm div.type { display: none; } /*FIS Referenztyp*/
+div.page6623 table.SearchForm div.type { display: none; } /*FIS Referenztyp*/
+div.page6624 table.SearchForm div.type { display: none; } /*FIS Referenztyp*/
+div.page6819 table.SearchForm div.type { display: none; } /*FIS Referenztyp*/
+/*Studentenportal*/
+div.page6225 table.KplStudentList .LStatus {display: none;}
+div.page6225 table.KplStudentList .ExtKey {display: none;}
+/*div.page6225 table.KplStudentList .SveFlags {display: none;}*/
+div.page6225 table.KplStudentList .RS {display: none;}
+div.page6225 table.KplStudentList .FS {display: none;}
+div.page6225 table.KplStudentList .ElementName {display: table-cell;}
+
+div.page6225 table.KplStudentList .LStatus {display: none;}
+div.page6225 table.KplStudentList .ExtKey {display: none;}
+/*div.page6225 table.KplStudentList .SveFlags {display: none;}*/
+div.page6225 table.KplStudentList .RS {display: none;}
+div.page6225 table.KplStudentList .FS {display: none;}
+div.page6225 table.KplStudentList .ElementName {display: table-cell;}
+
+/*DisplayFlags*/
+div.ProductInfo .OrderRole { display: none; }
+
+/*Link-Button zb. OrgPersonsSelectorCell*/
+a.button 
+{
+    border: solid 1px #296bb7;
+    color: #296bb7;
+}

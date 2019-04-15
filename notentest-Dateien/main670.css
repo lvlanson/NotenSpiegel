@@ -1,0 +1,40 @@
+/*------------------------------------------------------------------------------------------
+Copyright 2003-2014 Falk Neuner, nsoft.de
+Ausführung, Bearbeitung, Unterlizensierung nur mit ausdrücklicher Erlaubnis des Urhebers
+/*------------------------------------------------------------------------------------------
+Usage: Template 2 Spalten, HSMW mit Mobile
+Model: ???
+/*------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------*/
+div.Main670 table.AppForm {	width:670px; }
+div.Main670 table.AppGrid { min-width:670px;max-width:670px;width:670px; }
+
+/*max-width erforderlich, damit textareas mit 100% Zelle nicht vergrößern.*/
+div.Main670 td.AppFormCol1 {width: 160px;max-width:160px;min-width:160px;}
+div.Main670 td.AppFormCol2 {width: 320px;}
+div.Main670 td.AppFormCol12 {width: 480px;}
+div.Main670 td.AppFormCol23 {width: 510px;max-width:510px;}
+div.Main670 td.AppFormCol3 {width: 190px;}
+
+/*Konatkanzeige + Maps*/
+div.Main670 table.AppForm12 {width: 480px;}
+
+/*------------------------------------------------------------------------------------------
+Float-Form, verwendet die CmsPageInfo, CmsPageOperations
+------------------------------------------------------------------------------------------*/
+div.Main670 div.main div.AppForm {	width: 670px; }
+div.Main670 div.main div.AppFormCol1 {width: 160px;float: left;}
+div.Main670 div.main div.AppFormCol2 {width: 320px;float: left;}
+div.Main670 div.main div.AppFormCol12 {width: 480px;float: left;}
+div.Main670 div.main div.AppFormCol23 {width: 510px;float: left;}
+div.Main670 div.main div.AppFormCol3 {width: 190px;float: left;}
+
+
+div.left div.AppForm {	}
+div.left div.AppForm div {padding: 0 5px 0 5px; }
+div.left div.AppForm {font-size: 8pt; color: #808080; padding-bottom: 5px; }
+div.left div.AppFormCol1 {border-top: solid 0px #808080; margin-bottom:5px; }
+div.left div.AppFormCol1 p.SysFormsInfoLabel {text-align: left;}
+
+
+

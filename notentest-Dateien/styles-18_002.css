@@ -1,0 +1,75 @@
+
+/*Eingabefelder Mehrfachbearbeitung*/
+.error 
+{
+	background: #ff7f7f;
+	vertical-align: top;
+}
+.changed 
+{
+	/*border: 1px solid #007f00;*/
+	/*<%=$meInputClass%>*/
+	background: #ccdcff;
+}
+
+/*Einschreibevermerk KplSEinschreibungList*/
+span.stamp 
+{
+	color: #7f7f7f;
+	font-size: 7pt;
+	padding-left: 18px;
+}
+span.today 
+{
+	color: #0000ff;
+	font-size: 7pt;
+	padding-left: 18px;
+}
+
+/*Einschreibungsstatus/Frist KplSEinschreibungList*/
+div.KplSEinschreibungList td.white 	{ padding: 0 0 0 2px; border-left: 4px solid #ffffff; }
+div.KplSEinschreibungList td.gray	{ padding: 0 0 0 2px; border-left: 4px solid #808080; }
+div.KplSEinschreibungList td.green 	{ padding: 0 0 0 2px; border-left: 4px solid #00ff00; }
+div.KplSEinschreibungList td.yellow { padding: 0 0 0 2px; border-left: 4px solid #c0c000; }
+div.KplSEinschreibungList td.blue 	{ padding: 0 0 0 2px; border-left: 4px solid #0066cc; }
+div.KplSEinschreibungList td.lila 	{ padding: 0 0 0 2px; border-left: 4px solid #0066cc; }
+div.KplSEinschreibungList td.red 	{ padding: 0 0 0 2px; border-left: 4px solid #DF111A; } /* #B6181F */
+div.KplSEinschreibungList div.white { padding-left: 2px !important; border-left: 4px solid #ffffff; margin-bottom: 1px; }
+div.KplSEinschreibungList div.gray	{ padding-left: 2px !important; border-left: 4px solid #808080; margin-bottom: 1px; }
+div.KplSEinschreibungList div.green { padding-left: 2px !important; border-left: 4px solid #37a83a; margin-bottom: 1px; }
+div.KplSEinschreibungList div.yellow{ padding-left: 2px !important; border-left: 4px solid #c0c000; margin-bottom: 1px; }
+div.KplSEinschreibungList div.blue  { padding-left: 2px !important; border-left: 4px solid #0066cc; margin-bottom: 1px; }
+div.KplSEinschreibungList div.lila  { padding-left: 2px !important; border-left: 4px solid #0066cc; margin-bottom: 1px; }
+div.KplSEinschreibungList div.red   { padding-left: 2px !important; border-left: 4px solid #DF111A; margin-bottom: 1px; }
+
+/*Textfarben Kursstatus*/
+span.gray { color: #808080; }/*FG grau*/
+span.green { color: #37a83a; }
+span.yellow { color: #a7a700; }/*FG gelb*/
+span.blue { color: #0066cc; }/*FG blau*/
+span.lila { color: #0066cc; }/*FG blau*/
+span.red { color: #df111a; }/*FG rot*/
+
+/*Farblegende Kursstatus*/
+p.ControlsLegend span.gray   { border-left: 5px solid #808080; padding-left: 3px; padding-right: 5px; }
+p.ControlsLegend span.green  { border-left: 5px solid #37a83a; padding-left: 3px; padding-right: 5px; }
+p.ControlsLegend span.yellow { border-left: 5px solid #c0c000; padding-left: 3px; padding-right: 5px; }
+p.ControlsLegend span.blue   { border-left: 5px solid #0066cc; padding-left: 3px; padding-right: 5px; }
+p.ControlsLegend span.lila   { border-left: 5px solid #0066cc; padding-left: 3px; padding-right: 5px; }
+p.ControlsLegend span.red    { border-left: 5px solid #DF111A; padding-left: 3px; padding-right: 5px; }
+
+/*Prüfungsstatus*/
+table.SveStatus tr.U   td.SveStatus { color: #a7a700; }/*FG gelb*/
+table.SveStatus tr.AW  td.SveStatus { color: #0066cc; }/*FG blau*/
+table.SveStatus tr.ES  td.SveStatus { color: #808080; }/*FG grau*/
+table.SveStatus tr.UES td.SveStatus { color: #df111a; }/*FG rot*/
+table.SveStatus tr.B   td.SveStatus { color: #37a83a; }/*FG grün*/
+table.SveStatus tr.NB  td.SveStatus { color: #df111a; }/*FG rot*/
+table.SveStatus tr.NZ  td.SveStatus { color: #808080; }/*FG grau*/
+table.SveStatus tr.TA  td.SveStatus { color: #df111a; }/*FG rot*/
+table.SveStatus tr.FR  td.SveStatus { color: #df111a; }/*FG rot*/
+
+/*SVEFLAGS*/
+table.SveStatus tr.Unwirksam, table.SveStatus tr.Unwirksam a { text-decoration: line-through; }
+
+
