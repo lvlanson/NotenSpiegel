@@ -9,8 +9,16 @@ public class Hsmw{
   private static URLConnection con;
 
   //private static void login(String username, String password){
-  public static void login(String username, String password){
+  public static void login(){
 
+    /*
+     * Muss gegen Login System in der KonsolenGUI getauscht werden
+    */
+    System.out.println("Please Enter your Username:");
+    String username = System.console().readLine();
+
+    System.out.println("Please Enter your Password:");
+    String password = String.copyValueOf(System.console().readPassword());
 
     try{
       URLObj = new URL("https://start.hs-mittweida.de");
