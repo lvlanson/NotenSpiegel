@@ -44,20 +44,20 @@ public class DrawScreen{
       textGraphics.setCharacter(i,bottomStart, Symbols.DOUBLE_LINE_HORIZONTAL);
     }
     int offset = 0;
-    for(int i = 0; i<Commands.menue.size(); i+=2){
+    for(int i = 0; i<Commands.mainMenue.size(); i+=2){
       textGraphics.putString(offset,
                              bottomStart+1,
-                             Commands.menue.get(i),
+                             Commands.mainMenue.get(i),
                              SGR.BOLD);
-      if(i+1<=Commands.menue.size()){
+      if(i+1<=Commands.mainMenue.size()){
         textGraphics.putString(offset,
                                bottomStart+2,
-                               Commands.menue.get(i+1),
+                               Commands.mainMenue.get(i+1),
                                SGR.BOLD);
-        if(Commands.menue.get(i).length() > Commands.menue.get(i+1).length()){
-          offset+=Commands.menue.get(i).length()+3;
+        if(Commands.mainMenue.get(i).length() > Commands.mainMenue.get(i+1).length()){
+          offset+=Commands.mainMenue.get(i).length()+3;
         }else{
-          offset+=Commands.menue.get(i+1).length()+3;
+          offset+=Commands.mainMenue.get(i+1).length()+3;
         }
       }
     }
