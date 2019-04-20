@@ -3,10 +3,12 @@ import java.io.*;
 import java.net.*;
 //Diese Klasse verwaltet alle Operationen mit der HSMW Webseite
 public class Hsmw{
-  //Die Methode getMarks() gibt die Noten in Form einer Hashmap zurück.
-  //HashMap<String Fach, Double Note>
+  private static final String directoryPath = System.getProperty("user.dir")
+                                     + File.separator;
   private static URL URLObj;
   private static URLConnection con;
+  private static File data = new File(directoryPath + File.separator + "data.dat");
+
 
   //private static void login(String username, String password){
   public static void login(){
@@ -63,11 +65,11 @@ public class Hsmw{
 
   }
 
-  public static ArrayList extractScores(InputStream input){
-    ArrayList<Score> scores = new ArrayList<Score>();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-    String line = "";
-    int currentScore = 0;
+  private static ArrayList<Score> extractScores(InputStream input){
+    ArrayList<Score> scores       = new ArrayList<Score>();
+    BufferedReader   reader       = new BufferedReader(new InputStreamReader(input));
+    String           line         = "";
+    int              currentScore = 0;
     try{
       while((line = reader.readLine()) != null){
         if(line.contains("EmMNR Element") && !line.contains("th")){
@@ -86,5 +88,33 @@ public class Hsmw{
       e.printStackTrace();
     }
     return scores;
+  }
+  public static void writeScoresToFile(){
+    ObjectOutputStream oos = null;
+    try{
+      //
+      //
+      //
+      ArrayList<Score> scores = extractScores(new FileInputStream(new File("notentest.html")));
+      //
+      //
+      //
+      oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(data)));
+      oos.writeObject(scores);
+      oos.flush();
+    }catch(FileNotFoundException e){
+      e.printStackTrace();
+    }catch(IOException e){
+      e.printStackTrace();
+    }finally{
+      try{
+        oos.close();
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    }
+  }
+  public static String getDataPath(){
+    return data.getPath();
   }
 }

@@ -1,4 +1,7 @@
-public class Score{
+import java.io.Serializable;
+
+public class Score implements Serializable{
+  private static final long serialVersionUID = 1;
   private String studienElement;
   private String subject;
   private float score;

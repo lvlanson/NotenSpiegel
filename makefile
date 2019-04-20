@@ -1,19 +1,17 @@
-JCC = javac
-default: Notenspiegel.class DrawScreen.class Commands.class Hsmw.class Extract.class Score.class
+JCC=javac
+
+default: Notenspiegel.class Visual.class Hsmw.class Extract.class Score.class
 
 Notenspiegel.class:
 	$(JCC) Notenspiegel.java
 
-DrawScreen.class:
-	$(JCC) DrawScreen.java
-
-Commands.class:
-	$(JCC) Commands.java
+Visual.class:
+	$(JCC) Visual.java
 
 Hsmw.class:
 	$(JCC) Hsmw.java
 
-Extrac.class:
+Extract.class:
 	$(JCC) Extract.class
 
 Score.class:
