@@ -111,9 +111,12 @@ public class Visual{
       Label subject        = new Label(scoreSet.getSubject());
       Label score          = new Label("" + scoreSet.getScore());
       Label attempts       = new Label("" + scoreSet.getAttempts());
-      notenPanel.addComponent(subject);
-      notenPanel.addComponent(score);
-      notenPanel.addComponent(attempts);
+      if(scoreSet.getScore() != 0.0){
+        notenPanel.addComponent(subject);
+        notenPanel.addComponent(score);
+        notenPanel.addComponent(attempts);
+      }
+
     }
     Button exit = new Button("Exit", new Runnable(){
       @Override
