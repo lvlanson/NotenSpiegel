@@ -30,7 +30,9 @@ import java.io.ObjectInputStream;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.EOFException;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Visual{
   private DefaultTerminalFactory terminalFactory = null;
@@ -48,7 +50,11 @@ public class Visual{
   }
 
   private void createWelcomeWindow(){
-    Window window = new BasicWindow("Willkommen");
+    String surname = DataHandler.getSurname();
+    if(surname.length() != 0){
+      surname = " " + surname;
+    }
+    final Window window = new BasicWindow("Willkommen"+surname+"!");
     Panel welcomePanel = new Panel(new LinearLayout(Direction.VERTICAL));
     welcomePanel.addComponent(new Label("Was möchtest du gerne tun?"));
     welcomePanel.addComponent(new Button("Noten anzeigen", new Runnable(){
@@ -86,47 +92,38 @@ public class Visual{
   }
 
   private void createScoreScreen(){
-    ObjectInputStream ois = null;
-    try{
-      ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(Hsmw.getDataPath())));
-      final Window window = new BasicWindow("Notenliste");
-      Panel notenPanel = new Panel(new GridLayout(3));
-      Label head1 = new Label("Fach");
-      Label head2 = new Label("Note");
-      Label head3 = new Label("Versuch");
-      head1.addStyle(SGR.BOLD);
-      head2.addStyle(SGR.BOLD);
-      head3.addStyle(SGR.BOLD);
-      notenPanel.addComponent(head1);
-      notenPanel.addComponent(head2);
-      notenPanel.addComponent(head3);
-      ArrayList<Score> scores = (ArrayList<Score>) ois.readObject();
-      for(Score scoreSet: scores){
-        Label subject        = new Label(scoreSet.getSubject());
-        Label score          = new Label("" + scoreSet.getScore());
-        Label attempts       = new Label("" + scoreSet.getAttempts());
-
-        notenPanel.addComponent(subject);
-        notenPanel.addComponent(score);
-        notenPanel.addComponent(attempts);
-      }
-      Button exit = new Button("Exit", new Runnable(){
-        @Override
-        public void run(){
-          window.close();
-        }
-      });
-      notenPanel.addComponent(exit);
-      window.setComponent(notenPanel);
-      textGUI.addWindowAndWait(window);
-    }catch(ClassNotFoundException e){
-      e.printStackTrace();
-    }/*catch(EOFException e){
-      e.printStackTrace();
-    }*/catch(IOException e){
-      e.printStackTrace();
+    final Window window = new BasicWindow("Notenliste");
+    Panel notenPanel = new Panel(new GridLayout(3));
+    Label head1 = new Label("Fach");
+    Label head2 = new Label("Note");
+    Label head3 = new Label("Versuch");
+    head1.addStyle(SGR.BOLD);
+    head2.addStyle(SGR.BOLD);
+    head3.addStyle(SGR.BOLD);
+    notenPanel.addComponent(head1);
+    notenPanel.addComponent(head2);
+    notenPanel.addComponent(head3);
+    HashMap<String, Score> syllabusMap = DataHandler.getSyllabus();
+    Iterator it = syllabusMap.entrySet().iterator();
+    while(it.hasNext()){
+      Map.Entry pair = (Map.Entry)it.next();
+      Score scoreSet = (Score) pair.getValue();
+      Label subject        = new Label(scoreSet.getSubject());
+      Label score          = new Label("" + scoreSet.getScore());
+      Label attempts       = new Label("" + scoreSet.getAttempts());
+      notenPanel.addComponent(subject);
+      notenPanel.addComponent(score);
+      notenPanel.addComponent(attempts);
     }
-
+    Button exit = new Button("Exit", new Runnable(){
+      @Override
+      public void run(){
+        window.close();
+      }
+    });
+    notenPanel.addComponent(exit);
+    window.setComponent(notenPanel);
+    textGUI.addWindowAndWait(window);
   }
   public void run(){
     try{
