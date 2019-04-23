@@ -30,16 +30,7 @@ public class Tester{
       while(it.hasNext()){
         Map.Entry pair = (Map.Entry)it.next();
         Score sc = (Score) pair.getValue();
-        if(sc.isWpf()){
-          System.out.println(sc.getWpfTopic() + " " + sc.getWpfWeight()[0] + " aus " + sc.getWpfWeight()[1]);
-          System.out.println("\t" + pair.getKey() + " = " + sc.getStudienElement() + " " + sc.getSubject() + " " + sc.getWeight()[0] + "/" + sc.getWeight()[1]);
-
-        }else{
-          System.out.println(pair.getKey() + " = " + sc.getStudienElement() + " " + sc.getSubject() + " " + sc.getWeight()[0] + "/" + sc.getWeight()[1]);
-        }
-        System.out.println(sc.getScore());
-
-
+        System.out.println(sc.getSubject()+"("+sc.getStudienElement()+"): "+sc.getSemester());
         it.remove();
       }
     }catch(IOException e){

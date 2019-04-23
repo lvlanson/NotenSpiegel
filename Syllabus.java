@@ -11,7 +11,15 @@ public class Syllabus{
   private String name;
   private String course;
   private HashMap<String, Score> syllabusMap;
-
+  private int findSemester(BufferedReader reader) throws IOException{
+    String line = reader.readLine();
+    int semester = Extract.semester(line);
+    while(semester == 0 && !line.contains("S8")){
+      line = reader.readLine();
+      semester = Extract.semester(line);
+    }
+    return semester;
+  }
   private void findStudyInformation(InputStream in){
     //is found on https://www.intranet.hs-mittweida.de/sportal/his/studenten/student.info.asp?referer=&page_id=6527
     //Studentenportal -> Mein Studium
@@ -71,18 +79,23 @@ public class Syllabus{
       if(line.contains("EmSE MobileMain Name")){
         String studienElement = Extract.syllabusStudienElement(line);
         String subject = Extract.syllabusSubject(line);
+        int semester = findSemester(reader);
         int[] weight = new int[2];
         while(!(line = reader.readLine()).contains("PGew")){
         }
         weight = Extract.syllabusWeight(line);
-        syllabusMap.put(studienElement, new Score(studienElement, subject, weight));
+        //
+        System.out.println("Adding " + subject + " " + studienElement);
+        if(studienElement.equals("21021")){
+          System.out.println("Hier!!");
+        }
+        //
+        syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
       }
     }
     return true;
   }
-
   private boolean collectSpecialSyllabus(BufferedReader reader, String readLine) throws IOException{
-    System.out.println("Collecting Special Syllabus");
     String line = "";
     readLine = readLine.substring(readLine.indexOf("SysTreeLevel")+"SysTreeLevel".length());
     int indentLevel = Integer.parseInt(readLine.substring(0,readLine.indexOf("\"")));
@@ -101,20 +114,26 @@ public class Syllabus{
           String studienElement = Extract.syllabusStudienElement(line);
           String subject = Extract.syllabusSubject(line);
           int[] weight = new int[2];
-
+          int semester = findSemester(reader);
           while(!(line = reader.readLine()).contains("PGew")){
           }
           weight = Extract.syllabusWeight(line);
-          syllabusMap.put(studienElement, new Score(studienElement, subject, weight, true, wpfWeight, wpfTopic));
+          //
+          System.out.println("Adding " + subject + " " + studienElement);
+          //
+          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic));
         }else{
           String studienElement = Extract.syllabusStudienElement(line);
           String subject = Extract.syllabusSubject(line);
           int[] weight = new int[2];
-
+          int semester = findSemester(reader);
           while(!(line = reader.readLine()).contains("PGew")){
           }
           weight = Extract.syllabusWeight(line);
-          syllabusMap.put(studienElement, new Score(studienElement, subject, weight));
+          //
+          System.out.println("Adding " + subject + " " + studienElement);
+          //
+          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
         }
 
       }
@@ -134,6 +153,9 @@ public class Syllabus{
           studienElement = Extract.studienElement(line);
         }else if(line.contains("Em200 SveStatus") && !line.contains("th")){
           score = Extract.score(line);
+          if(syllabusMap.get(studienElement)==null){
+            System.out.println("!!!!"+studienElement+"!!!!!");
+          }
           syllabusMap.get(studienElement).setScore(score);
         }else if(line.contains("Em150 Versuch SveStatus") && !line.contains("th")){
           attempts = Extract.attempts(line);
@@ -144,8 +166,6 @@ public class Syllabus{
       e.printStackTrace();
     }
   }
-
-
   public void createSyllabus(InputStream basicStream, InputStream syllabusStream, InputStream scoreStream) throws Exception{
     //is found on https://www.intranet.hs-mittweida.de/sportal/his/studenten/student.ablauf.asp?referer=&page_id=6529
     //Studentenportal -> Mein Studium -> Mein Studienablauf

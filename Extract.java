@@ -76,4 +76,14 @@ public class Extract{
     snippet = snippet.substring(snippet.lastIndexOf("WPF ")+"WPF ".length(), snippet.lastIndexOf('('));
     return snippet;
   }
+  public static int semester(String snippet){
+    int semester = 0;
+    if(snippet.contains("Em1234")){
+      int length = snippet.substring(snippet.indexOf('>')+1,snippet.lastIndexOf('<')).length();
+      if(length>0){
+        semester = Integer.parseInt(snippet.substring(snippet.indexOf('S')+1,snippet.lastIndexOf('"')));
+      }
+    }
+    return semester;
+  }
 }

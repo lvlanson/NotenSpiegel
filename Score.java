@@ -12,19 +12,21 @@ public class Score implements Serializable{
   private boolean isWpf = false;
   private String wpfTopic;
   private int[] wpfWeight;
+  private int semester;
 
   public Score(){
 
   }
 
-  public Score(String studEl, String subject, int[] weight){
+  public Score(String studEl, String subject,int semester, int[] weight){
     this.studienElement = studEl;
     this.subject = subject;
     this.weight = new int[2];
     this.weight[0] = weight[0];
     this.weight[1] = weight[1];
+    this.semester = semester;
   }
-  public Score(String studEl, String subject, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic){
+  public Score(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic){
     this.studienElement = studEl;
     this.subject = subject;
     this.weight = new int[2];
@@ -35,6 +37,7 @@ public class Score implements Serializable{
     this.wpfWeight[0] = wpfWeight[0];
     this.wpfWeight[1] = wpfWeight[1];
     this.wpfTopic = wpfTopic;
+    this.semester = semester;
   }
   public String getStudienElement(){
     return this.studienElement;
@@ -66,6 +69,9 @@ public class Score implements Serializable{
   public int[] getWpfWeight(){
     return this.wpfWeight;
   }
+  public int getSemester(){
+    return this.semester;
+  }
 
   public void setStudienElement(String el){
     this.studienElement = el;
@@ -90,8 +96,8 @@ public class Score implements Serializable{
     this.weight[0] = denominator;
     this.weight[1] = numerator;
   }
-  public void setSubScore(String studEl, String subject, int[] weight){
-    this.subScore = new Score(studEl, subject, weight);
+  public void setSubScore(String studEl, String subject,int semester, int[] weight){
+    this.subScore = new Score(studEl, subject, semester, weight);
   }
   public void setWpfTopic(String wpfTopic){
     this.wpfTopic = wpfTopic;
