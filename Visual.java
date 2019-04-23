@@ -33,6 +33,7 @@ import java.io.EOFException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.ArrayList;
 
 public class Visual{
   private DefaultTerminalFactory terminalFactory = null;
@@ -90,7 +91,6 @@ public class Visual{
     window.setComponent(welcomePanel);
     textGUI.addWindowAndWait(window);
   }
-
   private void createScoreScreen(){
     final Window window = new BasicWindow("Notenliste");
     Panel notenPanel = new Panel(new GridLayout(3));
@@ -146,5 +146,20 @@ public class Visual{
         e.printStackTrace();
       }
     }
+  }
+  private HashMap<Integer, ArrayList<Score>> sortSemester(HashMap<String, Score> syllabusMap){
+    HashMap <Integer, ArrayList<Score>> sorted = new HashMap<Integer, ArrayList<Score>>();
+    for(Map.Entry score: syllabusMap.entrySet()){
+      Score value = (Score) score.getValue();
+      ArrayList<Score> scoreList = null;
+      if(sorted.get(value.getSemester()) == null){
+        scoreList = new ArrayList<Score>();
+      }else{
+        scoreList = sorted.get(value.getSemester());
+      }
+      scoreList.add(value);
+      sorted.put(value.getSemester(), scoreList);
+    }
+    return sorted;
   }
 }
