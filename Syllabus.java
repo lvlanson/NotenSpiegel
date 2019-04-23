@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 import java.util.HashMap;
-
+import java.util.Map;
 
 public class Syllabus{
   private String fieldOfStudy;
@@ -198,6 +198,26 @@ public class Syllabus{
       e.printStackTrace();
     }
   }
+  private void updateSemesters(){
+    for(Map.Entry<String, Score> entry: syllabusMap.entrySet()){
+      Score entryScore = entry.getValue();
+      if(entryScore.hasSubScore() && entryScore.getSemester() != 0){
+        for(Map.Entry<String,Score> subEntry: entryScore.getSubScore().entrySet()){
+          Score subScore = subEntry.getValue();
+          if(subScore.getSemester()==0){
+            subScore.setSemester(entryScore.getSemester());
+          }
+        }
+      }else if(entryScore.hasSubScore() && entryScore.getSemester() == 0){
+        for(Map.Entry<String,Score> subEntry: entryScore.getSubScore().entrySet()){
+          Score subScore = subEntry.getValue();
+          if(subScore.getSemester()!=0){
+            entryScore.setSemester(subScore.getSemester());
+          }
+        }
+      }
+    }
+  }
   public void createSyllabus(InputStream basicStream, InputStream syllabusStream, InputStream scoreStream) throws Exception{
     //is found on https://www.intranet.hs-mittweida.de/sportal/his/studenten/student.ablauf.asp?referer=&page_id=6529
     //Studentenportal -> Mein Studium -> Mein Studienablauf
@@ -230,6 +250,7 @@ public class Syllabus{
     }catch(IOException e){
       e.printStackTrace();
     }finally{
+      updateSemesters();
       extractScores(scoreStream);
       DataHandler.run();
       DataHandler.writeSyllabus(syllabusMap);

@@ -113,7 +113,6 @@ public class Score implements Serializable{
     }else{
       this.subScore.put(studEl, new Score(studEl, subject, semester, weight, isWpf, wpfWeight, wpfTopic));
     }
-
   }
   public void setWpfTopic(String wpfTopic){
     this.wpfTopic = wpfTopic;
@@ -122,5 +121,8 @@ public class Score implements Serializable{
     this.wpfWeight = new int[2];
     this.wpfWeight[0] = denominator;
     this.wpfWeight[1] = numerator;
+  }
+  public void setSemester(int semester){
+    this.semester = semester;
   }
 }
