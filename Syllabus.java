@@ -11,6 +11,7 @@ public class Syllabus{
   private String name;
   private String course;
   private HashMap<String, Score> syllabusMap;
+
   private int findSemester(BufferedReader reader) throws IOException{
     String line = reader.readLine();
     int semester = Extract.semester(line);
@@ -75,28 +76,35 @@ public class Syllabus{
   }
   private boolean collectMainSyllabus(BufferedReader reader) throws IOException{
     String line = "";
+    String lastStudienElement = "";
+    boolean isSubScore = false;
     while(!(line = reader.readLine()).contains("typ8")){
       if(line.contains("EmSE MobileMain Name")){
         String studienElement = Extract.syllabusStudienElement(line);
+        if(studienElement.contains(lastStudienElement) && lastStudienElement.length()>0){
+          isSubScore = true;
+        }
         String subject = Extract.syllabusSubject(line);
         int semester = findSemester(reader);
         int[] weight = new int[2];
         while(!(line = reader.readLine()).contains("PGew")){
         }
         weight = Extract.syllabusWeight(line);
-        //
-        System.out.println("Adding " + subject + " " + studienElement);
-        if(studienElement.equals("21021")){
-          System.out.println("Hier!!");
+        if(isSubScore){
+          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight);
+          isSubScore = false;
+        }else{
+          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
+          lastStudienElement = studienElement;
         }
-        //
-        syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
       }
     }
     return true;
   }
   private boolean collectSpecialSyllabus(BufferedReader reader, String readLine) throws IOException{
     String line = "";
+    String lastStudienElement = "";
+    boolean isSubScore = false;
     readLine = readLine.substring(readLine.indexOf("SysTreeLevel")+"SysTreeLevel".length());
     int indentLevel = Integer.parseInt(readLine.substring(0,readLine.indexOf("\"")));
     boolean wpfFound = false;
@@ -112,28 +120,40 @@ public class Syllabus{
         }
         if(wpfFound){
           String studienElement = Extract.syllabusStudienElement(line);
+          if(studienElement.contains(lastStudienElement) && lastStudienElement.length()>0){
+            isSubScore = true;
+          }
           String subject = Extract.syllabusSubject(line);
           int[] weight = new int[2];
           int semester = findSemester(reader);
           while(!(line = reader.readLine()).contains("PGew")){
           }
           weight = Extract.syllabusWeight(line);
-          //
-          System.out.println("Adding " + subject + " " + studienElement);
-          //
-          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic));
+          if(isSubScore){
+            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic);
+            isSubScore = false;
+          }else{
+            syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic));
+            lastStudienElement = studienElement;
+          }
         }else{
           String studienElement = Extract.syllabusStudienElement(line);
+          if(studienElement.contains(lastStudienElement) && lastStudienElement.length()>0){
+            isSubScore = true;
+          }
           String subject = Extract.syllabusSubject(line);
           int[] weight = new int[2];
           int semester = findSemester(reader);
           while(!(line = reader.readLine()).contains("PGew")){
           }
           weight = Extract.syllabusWeight(line);
-          //
-          System.out.println("Adding " + subject + " " + studienElement);
-          //
-          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
+          if(isSubScore){
+            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight);
+            isSubScore = false;
+          }else{
+            syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
+            lastStudienElement = studienElement;
+          }
         }
 
       }
@@ -143,7 +163,8 @@ public class Syllabus{
   private void extractScores(InputStream input){
     BufferedReader  reader         = new BufferedReader(new InputStreamReader(input));
     String          line           = "";
-    String          studienElement = null;
+    String          studienElement = "";
+    String          subStuEl       = "";
     int             attempts       = 0;
     float           score          = 0;
 
@@ -151,16 +172,27 @@ public class Syllabus{
       while((line = reader.readLine()) != null){
         if(line.contains("EmMNR Element") && !line.contains("th")){
           studienElement = Extract.studienElement(line);
+          if(studienElement.length()>4){
+            subStuEl = studienElement;
+            studienElement = subStuEl.substring(0,4);
+          }
         }else if(line.contains("Em200 SveStatus") && !line.contains("th")){
           score = Extract.score(line);
-          if(syllabusMap.get(studienElement)==null){
-            System.out.println("!!!!"+studienElement+"!!!!!");
+          if(subStuEl.length()>0){
+            syllabusMap.get(studienElement).getSubScore().get(subStuEl).setScore(score);
+          }else{
+            syllabusMap.get(studienElement).setScore(score);
           }
-          syllabusMap.get(studienElement).setScore(score);
+
         }else if(line.contains("Em150 Versuch SveStatus") && !line.contains("th")){
           attempts = Extract.attempts(line);
-          syllabusMap.get(studienElement).setAttempts(attempts);
+          if(subStuEl.length()>0){
+            syllabusMap.get(studienElement).getSubScore().get(subStuEl).setAttempts(attempts);
+          }else{
+            syllabusMap.get(studienElement).setAttempts(attempts);
+          }
         }
+        subStuEl = "";
       }
     }catch(IOException e){
       e.printStackTrace();

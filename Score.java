@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class Score implements Serializable{
   private static final long serialVersionUID = 1L;
@@ -7,7 +8,7 @@ public class Score implements Serializable{
   private float score;
   private int attempts;
   private int[] weight;
-  private Score subScore;
+  private HashMap<String, Score> subScore;
   private boolean hasSubScore = false;
   private boolean isWpf = false;
   private String wpfTopic;
@@ -54,7 +55,7 @@ public class Score implements Serializable{
   public int[] getWeight(){
     return this.weight;
   }
-  public Score getSubScore(){
+  public HashMap<String, Score> getSubScore(){
     return this.subScore;
   }
   public boolean hasSubScore(){
@@ -97,7 +98,22 @@ public class Score implements Serializable{
     this.weight[1] = numerator;
   }
   public void setSubScore(String studEl, String subject,int semester, int[] weight){
-    this.subScore = new Score(studEl, subject, semester, weight);
+    if(!hasSubScore){
+      this.subScore = new HashMap<String, Score>();
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight));
+      this.setSubScore();
+    }else{
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight));
+    }
+  }
+  public void setSubScore(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic){
+    if(!hasSubScore){
+      this.subScore = new HashMap<String, Score>();
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, isWpf, wpfWeight, wpfTopic));
+    }else{
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, isWpf, wpfWeight, wpfTopic));
+    }
+
   }
   public void setWpfTopic(String wpfTopic){
     this.wpfTopic = wpfTopic;
