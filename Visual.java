@@ -31,8 +31,8 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.EOFException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Iterator;
 import java.util.ArrayList;
 
 public class Visual{
@@ -104,20 +104,8 @@ public class Visual{
     notenPanel.addComponent(head2);
     notenPanel.addComponent(head3);
     HashMap<String, Score> syllabusMap = DataHandler.getSyllabus();
-    Iterator it = syllabusMap.entrySet().iterator();
-    while(it.hasNext()){
-      Map.Entry pair = (Map.Entry)it.next();
-      Score scoreSet = (Score) pair.getValue();
-      Label subject        = new Label(scoreSet.getSubject());
-      Label score          = new Label("" + scoreSet.getScore());
-      Label attempts       = new Label("" + scoreSet.getAttempts());
-      if(scoreSet.getScore() != 0.0){
-        notenPanel.addComponent(subject);
-        notenPanel.addComponent(score);
-        notenPanel.addComponent(attempts);
-      }
-
-    }
+    HashMap<Integer, ArrayList<Score>> sortedMap = sortSemester(syllabusMap);
+    drawSemesters(sortedMap, notenPanel, 1);
     Button exit = new Button("Exit", new Runnable(){
       @Override
       public void run(){
@@ -127,6 +115,136 @@ public class Visual{
     notenPanel.addComponent(exit);
     window.setComponent(notenPanel);
     textGUI.addWindowAndWait(window);
+  }
+  private void drawSemesters(HashMap<Integer, ArrayList<Score>> sortedMap, Panel notenPanel, int indent){
+    for(int i = 0; i<sortedMap.size(); i++){
+      HashMap<String,ArrayList<Score>> wpfMap = new HashMap<String, ArrayList<Score>>();
+      Label heading = null;
+      if(i == 0 && sortedMap.get(i) != null){
+        heading = new Label("Unbekanntes Semester");
+      }else if(sortedMap.get(i) != null){
+        heading = new Label(i + ". Semester");
+      }
+      if(heading != null){
+        heading.setLayoutData(GridLayout.createLayoutData(
+                              GridLayout.Alignment.BEGINNING, // Horizontal alignment in the grid cell if the cell is larger than the component's preferred size
+                              GridLayout.Alignment.BEGINNING, // Vertical alignment in the grid cell if the cell is larger than the component's preferred size
+                              true,                           // Give the component extra horizontal space if available
+                              false,                          // Give the component extra vertical space if available
+                              3,                              // Horizontal span
+                              1));                            // Vertical span
+        heading.addStyle(SGR.BOLD);
+        notenPanel.addComponent(heading);
+        for(Score scoreSet: sortedMap.get(i)){
+          if(scoreSet.isWpf()){
+            if(wpfMap.get(scoreSet.getWpfTopic()) == null){
+              ArrayList<Score> wpfScore = new ArrayList<Score>();
+              wpfScore.add(scoreSet);
+              wpfMap.put(scoreSet.getWpfTopic(), wpfScore);
+            }else{
+              wpfMap.get(scoreSet.getWpfTopic()).add(scoreSet);
+            }
+            continue;
+          }
+          String scoreString;
+          if(scoreSet.getScore()==0.0){
+            scoreString = "-";
+          }else{
+            scoreString = "" + scoreSet.getScore();
+          }
+          String attemptsString;
+          if(scoreSet.getAttempts()==0){
+            attemptsString = "-";
+          }else{
+            attemptsString = "" + scoreSet.getAttempts();
+          }
+          String tabs = "";
+          for(int j = 0; j<indent; j++){
+           tabs += "\t";
+          }
+          Label subject        = new Label(tabs + scoreSet.getSubject());
+          Label score          = new Label(scoreString);
+          Label attempts       = new Label(attemptsString);
+          notenPanel.addComponent(subject);
+          notenPanel.addComponent(score);
+          notenPanel.addComponent(attempts);
+          if(scoreSet.hasSubScore()){
+            drawScores(scoreSet.getSubScore(), notenPanel, indent+1);
+          }
+        }
+        drawWpf(wpfMap, notenPanel);
+      }
+    }
+  }
+  private void drawWpf(HashMap<String, ArrayList<Score>> sortedMap, Panel notenPanel){
+    Iterator it = sortedMap.entrySet().iterator();
+    while(it.hasNext()){
+      Map.Entry<String, ArrayList<Score>> pair = (Map.Entry)it.next();
+      String wpfTopic = pair.getKey();
+      ArrayList<Score> wpfList = pair.getValue();
+      Label heading = new Label("\t" + wpfTopic);
+      heading.setLayoutData(GridLayout.createLayoutData(
+                            GridLayout.Alignment.BEGINNING, // Horizontal alignment in the grid cell if the cell is larger than the component's preferred size
+                            GridLayout.Alignment.BEGINNING, // Vertical alignment in the grid cell if the cell is larger than the component's preferred size
+                            true,                           // Give the component extra horizontal space if available
+                            false,                          // Give the component extra vertical space if available
+                            3,                              // Horizontal span
+                            1));                            // Vertical span
+      heading.addStyle(SGR.BOLD);
+      notenPanel.addComponent(heading);
+      for(Score scoreSet: wpfList){
+        String scoreString;
+        if(scoreSet.getScore()==0.0){
+          scoreString = "-";
+        }else{
+          scoreString = "" + scoreSet.getScore();
+        }
+        String attemptsString;
+        if(scoreSet.getAttempts()==0){
+          attemptsString = "-";
+        }else{
+          attemptsString = "" + scoreSet.getAttempts();
+        }
+        String tabs = "\t\t";
+        Label subject        = new Label(tabs + scoreSet.getSubject());
+        Label score          = new Label(scoreString);
+        Label attempts       = new Label(attemptsString);
+        notenPanel.addComponent(subject);
+        notenPanel.addComponent(score);
+        notenPanel.addComponent(attempts);
+        if(scoreSet.hasSubScore()){
+          drawScores(scoreSet.getSubScore(), notenPanel, 2);
+        }
+      }
+      it.remove();
+    }
+  }
+  private void drawScores(HashMap<String, Score> scoreSet, Panel notenPanel, int indent){
+    for(Map.Entry<String,Score> subMap: scoreSet.entrySet()){
+      Score subSet = subMap.getValue();
+      String scoreSubString;
+      if(subSet.getScore()==0.0){
+        scoreSubString = "-";
+      }else{
+        scoreSubString = "" + subSet.getScore();
+      }
+      String attemptsSubString;
+      if(subSet.getAttempts()==0){
+        attemptsSubString = "-";
+      }else{
+        attemptsSubString = "" + subSet.getAttempts();
+      }
+      String tabs = "";
+      for(int j = 0; j<indent; j++){
+       tabs += "\t";
+      }
+      Label subSubject        = new Label(tabs + subSet.getSubject());
+      Label subScore          = new Label(scoreSubString);
+      Label subAttempts       = new Label(attemptsSubString);
+      notenPanel.addComponent(subSubject);
+      notenPanel.addComponent(subScore);
+      notenPanel.addComponent(subAttempts);
+    }
   }
   public void run(){
     try{
