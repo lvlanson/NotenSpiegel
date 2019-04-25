@@ -182,7 +182,7 @@ public class Visual{
       Map.Entry<String, ArrayList<Score>> pair = (Map.Entry)it.next();
       String wpfTopic = pair.getKey();
       ArrayList<Score> wpfList = pair.getValue();
-      Label heading = new Label("\t" + wpfTopic);
+      Label heading = new Label("\t" + wpfTopic + "("+wpfList.get(0).getWpfWeight()[0]+" aus "+wpfList.get(0).getWpfWeight()[1]+")");
       heading.setLayoutData(GridLayout.createLayoutData(
                             GridLayout.Alignment.BEGINNING, // Horizontal alignment in the grid cell if the cell is larger than the component's preferred size
                             GridLayout.Alignment.BEGINNING, // Vertical alignment in the grid cell if the cell is larger than the component's preferred size

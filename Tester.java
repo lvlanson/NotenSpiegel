@@ -30,14 +30,7 @@ public class Tester{
       while(it.hasNext()){
         Map.Entry pair = (Map.Entry)it.next();
         Score sc = (Score) pair.getValue();
-        System.out.println(sc.getSubject()+"("+sc.getStudienElement()+"): "+sc.getSemester());
-        if(sc.hasSubScore()){
-          for(Map.Entry<String, Score> entry : sc.getSubScore().entrySet()){
-            String key = entry.getKey();
-            Score value = entry.getValue();
-            System.out.println("\t"+value.getSubject());
-          }
-        }
+        System.out.println(sc.toString());
         it.remove();
       }
     }catch(IOException e){

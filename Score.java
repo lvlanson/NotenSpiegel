@@ -125,4 +125,33 @@ public class Score implements Serializable{
   public void setSemester(int semester){
     this.semester = semester;
   }
+  public String toString(){
+    String score = "studienElement: " + "\t" + this.studienElement                      + "\n"
+                 + "subject: "        + "\t\t" +this.subject                            + "\n"
+                 + "score: "          + "\t\t\t" +this.score                            + "\n"
+                 + "attempts: "       + "\t\t" +this.attempts                           + "\n"
+                 + "weight: "         + "\t\t[" +this.weight[0] + "][" + this.weight[1] + "]\n"
+                 + "semester: "       + "\t\t" +this.semester                           + "\n"
+                 + "hasSubScore: "    + "\t\t" +this.hasSubScore                        + "\n";
+    score += "isWpf: " + "\t\t\t" + this.isWpf + "\n";
+    if(this.isWpf){
+      score+="wpfTopic: " + "\t\t" + this.wpfTopic + "\n"
+            +"wpfWeight: " + "\t\t[" + this.wpfWeight[0] + "][" + this.wpfWeight[1] + "]\n";
+    }
+    if(this.hasSubScore){
+      score += "\t ===Subscore:===\n";
+      for(Score subSet: this.subScore.values()){
+        score += "\n" + subSet.toString();
+      }
+      score += "\n";
+
+    }
+    if(this.studienElement.length()>4){
+      score+="\t========================================";
+    }else{
+      score+= "================================================";
+    }
+
+    return score;
+  }
 }
