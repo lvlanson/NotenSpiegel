@@ -25,7 +25,7 @@ public class Tester{
         e.printStackTrace();
       }
 
-      HashMap<String, Score> syllabusMap = DataHandler.getSyllabus();
+      /*HashMap<String, Score> syllabusMap = DataHandler.getSyllabus();
       Iterator it = syllabusMap.entrySet().iterator();
       while(it.hasNext()){
         Map.Entry pair = (Map.Entry)it.next();
@@ -36,6 +36,8 @@ public class Tester{
 
         it.remove();
       }
+      */
+      System.out.println(s.getAverage());
     }catch(IOException e){
       e.printStackTrace();
     }finally{

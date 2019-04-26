@@ -5,6 +5,8 @@ import java.io.IOException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collection;
+import java.util.ArrayList;
 
 public class Syllabus{
   private String fieldOfStudy;
@@ -12,6 +14,8 @@ public class Syllabus{
   private String course;
   private HashMap<String, Score> syllabusMap;
   private int lastSemester;
+  private float average;
+  private float testAverage;
 
   private int findSemester(BufferedReader reader) throws IOException{
     String line = reader.readLine();
@@ -172,13 +176,11 @@ public class Syllabus{
     return true;
   }
   private boolean collectFinalSyllabus(BufferedReader reader, String line) throws IOException{
-    System.out.println("Creating Final Syllabus");
     String lastStudienElement = "";
     boolean isSubScore = false;
     while(!(line.contains("ControlsLegend"))){
       if(line.contains("EmSE MobileMain Name")){
         String studienElement = Extract.syllabusStudienElement(line);
-        System.out.println("Studienelement: "+studienElement);
         if(studienElement.contains(lastStudienElement) && lastStudienElement.length()>0){
           isSubScore = true;
         }
@@ -188,8 +190,6 @@ public class Syllabus{
           semester = lastSemester + 1;
         }
         int[] weight = new int[2];
-        System.out.println("Subject: " + subject);
-        System.out.println("Semester: " + semester);
         while(!(line = reader.readLine()).contains("PGew")){
         }
         weight = Extract.syllabusWeight(line);
@@ -268,17 +268,29 @@ public class Syllabus{
     for(Score score: syllabusMap.values()){
       if(score.hasSubScore()){
         float average = 0.0f;
-        int denominator = 0;
         for(Score subScore: score.getSubScore().values()){
-          average += (subScore.getScore()*subScore.getWeight()[0]);
-          if(denominator == 0){
-            denominator = subScore.getWeight()[1];
-          }
+          average += (subScore.getScore()*subScore.getWeight()[0]/subScore.getWeight()[1]);
         }
-        average = (float)((int)((average/denominator)*10))/10;
+        average = (float)((int)(average*10))/10;
         score.setScore(average);
       }
     }
+  }
+  private float calculateAverage(Collection<Score> scoreSet){
+    float average = 0.0f;
+    int denominator = 0;
+    ArrayList<String> wpfDone = new ArrayList<String>();
+    for(Score score: scoreSet){
+      System.out.println("Starting with score " + score.getSubject());
+      if(score.getScore() != 0){
+        average += score.getScore()*score.getWeight()[0];
+        denominator++;
+      }
+    }
+    System.out.println("Calculating Average now");
+    average = (float)((int)((average/denominator)*10))/10;
+    System.out.println(wpfDone.toString());
+    return average;
   }
   public void createSyllabus(InputStream basicStream, InputStream syllabusStream, InputStream scoreStream) throws Exception{
     //is found on https://www.intranet.hs-mittweida.de/sportal/his/studenten/student.ablauf.asp?referer=&page_id=6529
@@ -314,6 +326,7 @@ public class Syllabus{
     }finally{
       updateSemesters();
       extractScores(scoreStream);
+      average = calculateAverage(syllabusMap.values());
       DataHandler.run();
       DataHandler.writeSyllabus(syllabusMap);
       DataHandler.writeUser(new User(name, course, fieldOfStudy));
@@ -339,5 +352,11 @@ public class Syllabus{
   }
   public HashMap<String, Score> getSyllabusMap(){
     return syllabusMap;
+  }
+  public float getAverage(){
+    return this.average;
+  }
+  public float getTestAverage(){
+    return this.testAverage;
   }
 }
