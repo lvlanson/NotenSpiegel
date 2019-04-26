@@ -279,17 +279,13 @@ public class Syllabus{
   private float calculateAverage(Collection<Score> scoreSet){
     float average = 0.0f;
     int denominator = 0;
-    ArrayList<String> wpfDone = new ArrayList<String>();
     for(Score score: scoreSet){
-      System.out.println("Starting with score " + score.getSubject());
       if(score.getScore() != 0){
         average += score.getScore()*score.getWeight()[0];
         denominator += score.getWeight()[0];
       }
     }
-    System.out.println("Calculating Average now");
     average = (float)((int)((average/denominator)*10))/10;
-    System.out.println(wpfDone.toString());
     return average;
   }
   public void createSyllabus(InputStream basicStream, InputStream syllabusStream, InputStream scoreStream) throws Exception{
