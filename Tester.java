@@ -30,7 +30,10 @@ public class Tester{
       while(it.hasNext()){
         Map.Entry pair = (Map.Entry)it.next();
         Score sc = (Score) pair.getValue();
-        System.out.println(sc.toString());
+        if(sc.getSemester() == 6){
+          System.out.println(sc.toString());
+        }
+
         it.remove();
       }
     }catch(IOException e){

@@ -11,6 +11,7 @@ public class Syllabus{
   private String name;
   private String course;
   private HashMap<String, Score> syllabusMap;
+  private int lastSemester;
 
   private int findSemester(BufferedReader reader) throws IOException{
     String line = reader.readLine();
@@ -75,6 +76,7 @@ public class Syllabus{
     }
   }
   private boolean collectMainSyllabus(BufferedReader reader) throws IOException{
+    lastSemester = 0;
     String line = "";
     String lastStudienElement = "";
     boolean isSubScore = false;
@@ -86,6 +88,9 @@ public class Syllabus{
         }
         String subject = Extract.syllabusSubject(line);
         int semester = findSemester(reader);
+        if(lastSemester < semester){
+          lastSemester = semester;
+        }
         int[] weight = new int[2];
         while(!(line = reader.readLine()).contains("PGew")){
         }
@@ -126,6 +131,9 @@ public class Syllabus{
           String subject = Extract.syllabusSubject(line);
           int[] weight = new int[2];
           int semester = findSemester(reader);
+          if(lastSemester < semester){
+            lastSemester = semester;
+          }
           while(!(line = reader.readLine()).contains("PGew")){
           }
           weight = Extract.syllabusWeight(line);
@@ -144,6 +152,9 @@ public class Syllabus{
           String subject = Extract.syllabusSubject(line);
           int[] weight = new int[2];
           int semester = findSemester(reader);
+          if(lastSemester < semester){
+            lastSemester = semester;
+          }
           while(!(line = reader.readLine()).contains("PGew")){
           }
           weight = Extract.syllabusWeight(line);
@@ -157,6 +168,40 @@ public class Syllabus{
         }
 
       }
+    }
+    return true;
+  }
+  private boolean collectFinalSyllabus(BufferedReader reader, String line) throws IOException{
+    System.out.println("Creating Final Syllabus");
+    String lastStudienElement = "";
+    boolean isSubScore = false;
+    while(!(line.contains("ControlsLegend"))){
+      if(line.contains("EmSE MobileMain Name")){
+        String studienElement = Extract.syllabusStudienElement(line);
+        System.out.println("Studienelement: "+studienElement);
+        if(studienElement.contains(lastStudienElement) && lastStudienElement.length()>0){
+          isSubScore = true;
+        }
+        String subject = Extract.syllabusSubject(line);
+        int semester = findSemester(reader);
+        if(semester < lastSemester){
+          semester = lastSemester + 1;
+        }
+        int[] weight = new int[2];
+        System.out.println("Subject: " + subject);
+        System.out.println("Semester: " + semester);
+        while(!(line = reader.readLine()).contains("PGew")){
+        }
+        weight = Extract.syllabusWeight(line);
+        if(isSubScore){
+          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight);
+          isSubScore = false;
+        }else{
+          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
+          lastStudienElement = studienElement;
+        }
+      }
+      line = reader.readLine();
     }
     return true;
   }
@@ -191,9 +236,10 @@ public class Syllabus{
           }else{
             syllabusMap.get(studienElement).setAttempts(attempts);
           }
+          subStuEl = "";
         }
-        subStuEl = "";
       }
+      updateParentScore();
     }catch(IOException e){
       e.printStackTrace();
     }
@@ -215,6 +261,22 @@ public class Syllabus{
             entryScore.setSemester(subScore.getSemester());
           }
         }
+      }
+    }
+  }
+  private void updateParentScore(){
+    for(Score score: syllabusMap.values()){
+      if(score.hasSubScore()){
+        float average = 0.0f;
+        int denominator = 0;
+        for(Score subScore: score.getSubScore().values()){
+          average += (subScore.getScore()*subScore.getWeight()[0]);
+          if(denominator == 0){
+            denominator = subScore.getWeight()[1];
+          }
+        }
+        average = (float)((int)((average/denominator)*10))/10;
+        score.setScore(average);
       }
     }
   }
@@ -241,11 +303,11 @@ public class Syllabus{
           isMainSyllabusDone = collectMainSyllabus(reader);
         }else if(!isSpecialSyllabusDone && (line.contains(this.fieldOfStudy))){
           isSpecialSyllabusDone = collectSpecialSyllabus(reader, line);
-
+        }else if(isSpecialSyllabusDone && !isFinalSyllabusDone && (line.contains("SysTreeLevel1"))){
+          isFinalSyllabusDone = collectFinalSyllabus(reader, line);
         }else if(isSpecialSyllabusDone && isMainSyllabusDone && isFinalSyllabusDone){
           break;
         }
-
       }
     }catch(IOException e){
       e.printStackTrace();
