@@ -284,7 +284,7 @@ public class Syllabus{
       System.out.println("Starting with score " + score.getSubject());
       if(score.getScore() != 0){
         average += score.getScore()*score.getWeight()[0];
-        denominator++;
+        denominator += score.getWeight()[0];
       }
     }
     System.out.println("Calculating Average now");
