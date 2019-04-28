@@ -1,6 +1,6 @@
 /*
  * This file is part of lanterna (http://code.google.com/p/lanterna/).
- * 
+ *
  * lanterna is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * Copyright (C) 2010-2018 Martin Berglund
  */
 package com.googlecode.lanterna.gui2;
@@ -41,7 +41,7 @@ public interface Window extends BasePane {
      * of a Window as {@code [Expanded, Modal]} than as {@code [foo.Bar@12345, foo.Bar@fedcba]}
      */
     class Hint {
-        /**
+        /**s
          * With this hint, the TextGUI system should not draw any decorations around the window. Decorated size will be
          * the same as the window size.
          */
@@ -123,9 +123,9 @@ public interface Window extends BasePane {
 
     @Override
     WindowBasedTextGUI getTextGUI();
-    
+
     /**
-     * DON'T CALL THIS METHOD YOURSELF, it is called automatically by the TextGUI system when you add a window. If you 
+     * DON'T CALL THIS METHOD YOURSELF, it is called automatically by the TextGUI system when you add a window. If you
      * call it with the intention of adding the window to the specified TextGUI, you need to read the documentation
      * on how to use windows.
      * @param textGUI TextGUI this window belongs to from now on

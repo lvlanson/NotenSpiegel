@@ -14,6 +14,9 @@ public class Score implements Serializable{
   private String wpfTopic;
   private int[] wpfWeight;
   private int semester;
+  private boolean isTested = false;
+  private String parentStudienElement;
+  private boolean hasParentScore = false;
 
   public Score(){
 
@@ -27,6 +30,16 @@ public class Score implements Serializable{
     this.weight[1] = weight[1];
     this.semester = semester;
   }
+  public Score(String studEl, String subject,int semester, int[] weight, String parentStudienElement){
+    this.studienElement = studEl;
+    this.subject = subject;
+    this.weight = new int[2];
+    this.weight[0] = weight[0];
+    this.weight[1] = weight[1];
+    this.semester = semester;
+    this.parentStudienElement = parentStudienElement;
+    this.hasParentScore = true;
+  }
   public Score(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic){
     this.studienElement = studEl;
     this.subject = subject;
@@ -39,6 +52,21 @@ public class Score implements Serializable{
     this.wpfWeight[1] = wpfWeight[1];
     this.wpfTopic = wpfTopic;
     this.semester = semester;
+  }
+  public Score(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic, String parentStudienElement){
+    this.studienElement = studEl;
+    this.subject = subject;
+    this.weight = new int[2];
+    this.weight[0] = weight[0];
+    this.weight[1] = weight[1];
+    this.isWpf = isWpf;
+    this.wpfWeight = new int[2];
+    this.wpfWeight[0] = wpfWeight[0];
+    this.wpfWeight[1] = wpfWeight[1];
+    this.wpfTopic = wpfTopic;
+    this.semester = semester;
+    this.parentStudienElement = parentStudienElement;
+    this.hasParentScore = true;
   }
   public String getStudienElement(){
     return this.studienElement;
@@ -73,6 +101,15 @@ public class Score implements Serializable{
   public int getSemester(){
     return this.semester;
   }
+  public boolean isTested(){
+    return this.isTested;
+  }
+  public boolean hasParentScore(){
+    return this.hasParentScore;
+  }
+  public String getParentStudienElement(){
+    return this.parentStudienElement;
+  }
 
   public void setStudienElement(String el){
     this.studienElement = el;
@@ -97,21 +134,21 @@ public class Score implements Serializable{
     this.weight[0] = denominator;
     this.weight[1] = numerator;
   }
-  public void setSubScore(String studEl, String subject,int semester, int[] weight){
+  public void setSubScore(String studEl, String subject,int semester, int[] weight, String parentStudienElement){
     if(!hasSubScore){
       this.subScore = new HashMap<String, Score>();
-      this.subScore.put(studEl, new Score(studEl, subject, semester, weight));
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, parentStudienElement));
       this.setSubScore();
     }else{
-      this.subScore.put(studEl, new Score(studEl, subject, semester, weight));
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, parentStudienElement));
     }
   }
-  public void setSubScore(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic){
+  public void setSubScore(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic, String parentStudienElement){
     if(!hasSubScore){
       this.subScore = new HashMap<String, Score>();
-      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, isWpf, wpfWeight, wpfTopic));
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, isWpf, wpfWeight, wpfTopic, parentStudienElement));
     }else{
-      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, isWpf, wpfWeight, wpfTopic));
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, isWpf, wpfWeight, wpfTopic, parentStudienElement));
     }
   }
   public void setWpfTopic(String wpfTopic){
@@ -125,19 +162,29 @@ public class Score implements Serializable{
   public void setSemester(int semester){
     this.semester = semester;
   }
+  public void setIsTested(){
+    this.isTested = true;
+  }
+  public void resetIsTested(){
+    this.isTested = false;
+  }
+
   public String toString(){
-    String score = "studienElement: " + "\t" + this.studienElement                      + "\n"
-                 + "subject: "        + "\t\t" +this.subject                            + "\n"
-                 + "score: "          + "\t\t\t" +this.score                            + "\n"
-                 + "attempts: "       + "\t\t" +this.attempts                           + "\n"
-                 + "weight: "         + "\t\t[" +this.weight[0] + "][" + this.weight[1] + "]\n"
-                 + "semester: "       + "\t\t" +this.semester                           + "\n"
-                 + "hasSubScore: "    + "\t\t" +this.hasSubScore                        + "\n";
+    String score = "studienElement: " + "\t"    + this.studienElement                     + "\n"
+                 + "subject: "        + "\t\t"  + this.subject                            + "\n"
+                 + "score: "          + "\t\t\t"+ this.score                              + "\n"
+                 + "attempts: "       + "\t\t"  + this.attempts                           + "\n"
+                 + "weight: "         + "\t\t[" + this.weight[0] + "][" + this.weight[1]  + "]\n"
+                 + "semester: "       + "\t\t"  + this.semester                           + "\n"
+                 + "hasSubScore: "    + "\t\t"  + this.hasSubScore                        + "\n"
+                 + "hasParentScore:"  + "\t\t"  + this.hasParentScore                     + "\n"
+                 + "parentStudienElement" + "\t"+ this.parentStudienElement               + "\n";
     score += "isWpf: " + "\t\t\t" + this.isWpf + "\n";
     if(this.isWpf){
       score+="wpfTopic: " + "\t\t" + this.wpfTopic + "\n"
             +"wpfWeight: " + "\t\t[" + this.wpfWeight[0] + "][" + this.wpfWeight[1] + "]\n";
     }
+    score += "isTested: " + this.isTested + "\n";
     if(this.hasSubScore){
       score += "\t ===Subscore:===\n";
       for(Score subSet: this.subScore.values()){

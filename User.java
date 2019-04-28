@@ -5,11 +5,20 @@ public class User implements Serializable{
   private String name;
   private String course;
   private String fieldOfStudy;
+  private float average;
+  private float testAverage;
 
-  public User(String name, String course, String fieldOfStudy){
+  public User(String name, String course, String fieldOfStudy, float average){
     this.name = name;
     this.course = course;
     this.fieldOfStudy = fieldOfStudy;
+    this.average = average;
+  }
+  public void setAverage(float average){
+    this.average = average;
+  }
+  public void setTestAverage(float testAverage){
+    this.testAverage = testAverage;
   }
 
   public String getName(){
@@ -20,5 +29,11 @@ public class User implements Serializable{
   }
   public String getFieldOfStudy(){
     return this.fieldOfStudy;
+  }
+  public float getAverage(){
+    return this.average;
+  }
+  public float getTestAverage(){
+    return this.testAverage;
   }
 }

@@ -25,18 +25,26 @@ public class Tester{
         e.printStackTrace();
       }
 
-      /*HashMap<String, Score> syllabusMap = DataHandler.getSyllabus();
-      Iterator it = syllabusMap.entrySet().iterator();
+      HashMap<String, Score> syllabusMap = DataHandler.getTestMap();
+      System.out.println("Testmap:");
+      System.out.println(syllabusMap.get("2120").getSubScore().get("2120(T1)").hasParentScore());
+      Iterator it = s.getSyllabusMap().entrySet().iterator();
       while(it.hasNext()){
         Map.Entry pair = (Map.Entry)it.next();
         Score sc = (Score) pair.getValue();
-        if(sc.getSemester() == 6){
-          System.out.println(sc.toString());
+        if(sc.hasSubScore()){
+          for(Score ns : sc.getSubScore().values()){
+            if(ns.hasParentScore()){
+
+            }
+          }
+
         }
+
 
         it.remove();
       }
-      */
+
       System.out.println(s.getAverage());
     }catch(IOException e){
       e.printStackTrace();

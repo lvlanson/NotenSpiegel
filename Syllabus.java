@@ -15,7 +15,6 @@ public class Syllabus{
   private HashMap<String, Score> syllabusMap;
   private int lastSemester;
   private float average;
-  private float testAverage;
 
   private int findSemester(BufferedReader reader) throws IOException{
     String line = reader.readLine();
@@ -100,7 +99,7 @@ public class Syllabus{
         }
         weight = Extract.syllabusWeight(line);
         if(isSubScore){
-          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight);
+          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement);
           isSubScore = false;
         }else{
           syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
@@ -142,7 +141,7 @@ public class Syllabus{
           }
           weight = Extract.syllabusWeight(line);
           if(isSubScore){
-            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic);
+            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic, lastStudienElement);
             isSubScore = false;
           }else{
             syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic));
@@ -163,7 +162,7 @@ public class Syllabus{
           }
           weight = Extract.syllabusWeight(line);
           if(isSubScore){
-            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight);
+            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement);
             isSubScore = false;
           }else{
             syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
@@ -194,7 +193,7 @@ public class Syllabus{
         }
         weight = Extract.syllabusWeight(line);
         if(isSubScore){
-          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight);
+          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement);
           isSubScore = false;
         }else{
           syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
@@ -288,6 +287,30 @@ public class Syllabus{
     average = (float)((int)((average/denominator)*10))/10;
     return average;
   }
+  private static void updateParentScore(HashMap<String, Score> syllabusMap){
+    for(Score score: syllabusMap.values()){
+      if(score.hasSubScore()){
+        float average = 0.0f;
+        for(Score subScore: score.getSubScore().values()){
+          average += (subScore.getScore()*subScore.getWeight()[0]/subScore.getWeight()[1]);
+        }
+        average = (float)((int)(average*10))/10;
+        syllabusMap.get(score.getStudienElement()).setScore(average);
+      }
+    }
+  }
+  public static float updateAverage(HashMap<String, Score> syllabusMap){
+    updateParentScore(syllabusMap);
+    float average = 0.0f;
+    int denominator = 0;
+    for(Score score: syllabusMap.values()){
+      if(score.getScore() != 0){
+        average += score.getScore()*score.getWeight()[0];
+        denominator += score.getWeight()[0];
+      }
+    }
+    return (float)((int)((average/denominator)*10))/10;
+  }
   public void createSyllabus(InputStream basicStream, InputStream syllabusStream, InputStream scoreStream) throws Exception{
     //is found on https://www.intranet.hs-mittweida.de/sportal/his/studenten/student.ablauf.asp?referer=&page_id=6529
     //Studentenportal -> Mein Studium -> Mein Studienablauf
@@ -323,9 +346,10 @@ public class Syllabus{
       updateSemesters();
       extractScores(scoreStream);
       average = calculateAverage(syllabusMap.values());
+      User user = new User(name, course, fieldOfStudy, average);
       DataHandler.run();
       DataHandler.writeSyllabus(syllabusMap);
-      DataHandler.writeUser(new User(name, course, fieldOfStudy));
+      DataHandler.writeUser(user);
       if(reader != null){
         try{
           reader.close();
@@ -351,8 +375,5 @@ public class Syllabus{
   }
   public float getAverage(){
     return this.average;
-  }
-  public float getTestAverage(){
-    return this.testAverage;
   }
 }
