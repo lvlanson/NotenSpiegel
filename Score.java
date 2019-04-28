@@ -118,6 +118,9 @@ public class Score implements Serializable{
     this.subject = subject;
   }
   public void setScore(float score){
+    if(this.isWpf){
+
+    }
     this.score = score;
   }
   public void setAttempts(int attempts){

@@ -430,6 +430,9 @@ public class Visual{
         Label attempts       = new Label(attemptsString);
         notenPanel.addComponent(subject);
         notenPanel.addComponent(attempts);
+        if(!scoreString.contains("-")){
+          scoreBox.setSelectedItem(scoreString);
+        }
         notenPanel.addComponent(scoreBox);
         if(scoreSet.hasSubScore()){
           drawScores(scoreSet.getSubScore(), notenPanel, 2);
@@ -567,7 +570,7 @@ public class Visual{
             testMap.get(score.getStudienElement()).setScore(testScore);
           }
         }
-        
+
         DataHandler.updateTestMap(testMap);
         DataHandler.updateTestAverage(Syllabus.updateAverage(testMap));
       }
