@@ -37,12 +37,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 public class Visual{
   private DefaultTerminalFactory terminalFactory = null;
   private Screen screen = null;
   private WindowBasedTextGUI textGUI = null;
+  private ComboBox.Listener changeScoreEventListener;
 
   public Visual(){
     try{
@@ -269,6 +269,7 @@ public class Visual{
   private void createTestScreen(){
     if(!DataHandler.testfileExists()){
       DataHandler.createTestfile();
+      DataHandler.createTestWpfCounter();
     }
     final Window window = new BasicWindow("Notenliste");
     Panel notenPanel = new Panel(new GridLayout(3));
@@ -350,7 +351,9 @@ public class Visual{
           notenPanel.addComponent(subject);
           notenPanel.addComponent(attempts);
           if(!scoreString.contains("-")){
+            scoreBox.removeListener(changeScoreEventListener);
             scoreBox.setSelectedItem(scoreString);
+            scoreBox.addListener(changeScoreEventListener);
           }
           notenPanel.addComponent(scoreBox);
           if(scoreSet.hasSubScore()){
@@ -388,7 +391,9 @@ public class Visual{
       notenPanel.addComponent(subSubject);
       notenPanel.addComponent(subAttempts);
       if(!scoreSubString.contains("-")){
+        scoreBox.removeListener(changeScoreEventListener);
         scoreBox.setSelectedItem(scoreSubString);
+        scoreBox.addListener(changeScoreEventListener);
       }
       notenPanel.addComponent(scoreBox);
     }
@@ -431,7 +436,9 @@ public class Visual{
         notenPanel.addComponent(subject);
         notenPanel.addComponent(attempts);
         if(!scoreString.contains("-")){
+          scoreBox.removeListener(changeScoreEventListener);
           scoreBox.setSelectedItem(scoreString);
+          scoreBox.addListener(changeScoreEventListener);
         }
         notenPanel.addComponent(scoreBox);
         if(scoreSet.hasSubScore()){
@@ -544,37 +551,37 @@ public class Visual{
     return scoreBox;
   }
   private ComboBox.Listener changeScoreEvent(Score score, HashMap<String, Score> testMap, ComboBox<String> scoreBox){
-    return new ComboBox.Listener(){
+    changeScoreEventListener = new ComboBox.Listener(){
       @Override public void onSelectionChanged(int selectedIndex, int previousSelection){
-        if(!score.isTested() && selectedIndex != previousSelection){
-            float testScore = 0.0f;
-            if(!scoreBox.getSelectedItem().equals("-")){
-              testScore = Float.parseFloat(scoreBox.getSelectedItem());
-            }
-            if(score.hasParentScore()){
-              testMap.get(score.getParentStudienElement()).getSubScore().get(score.getStudienElement()).setIsTested();
-              testMap.get(score.getParentStudienElement()).setIsTested();
-              testMap.get(score.getParentStudienElement()).getSubScore().get(score.getStudienElement()).setScore(testScore);
-            }else{
-              testMap.get(score.getStudienElement()).setIsTested();
-              testMap.get(score.getStudienElement()).setScore(testScore);
-            }
-        }else if(selectedIndex != previousSelection){
-          float testScore = 0.0f;
-          if(!scoreBox.getSelectedItem().equals("-")){
-            testScore = Float.parseFloat(scoreBox.getSelectedItem());
-          }
-          if(score.hasParentScore()){
-            testMap.get(score.getParentStudienElement()).getSubScore().get(score.getStudienElement()).setScore(testScore);
+          if(!score.isWpf()){
+            updateTestScore(score, testMap, scoreBox, selectedIndex, previousSelection);
+            DataHandler.updateTestMap(testMap);
+            DataHandler.updateTestAverage(Syllabus.updateAverage(testMap));
           }else{
-            testMap.get(score.getStudienElement()).setScore(testScore);
+            if(updateTestWpf(selectedIndex, previousSelection, score.getWpfTopic(), score)){
+              updateTestScore(score, testMap, scoreBox, selectedIndex, previousSelection);
+              DataHandler.updateTestMap(testMap);
+              DataHandler.updateTestAverage(Syllabus.updateAverage(testMap));
+            }else{
+              scoreBox.removeListener(this);
+              selectedIndex = previousSelection;
+              scoreBox.setSelectedIndex(previousSelection);
+              String module = "";
+              if(score.getWpfWeight()[0] > 1){
+                module = "Module";
+              }else{
+                module = "Modul";
+              }
+              MessageDialog.showMessageDialog(textGUI,
+                                              "Achtung", "Du kannst maximal " + score.getWpfWeight()[0]
+                                              + " " + module +" in " + score.getWpfTopic() + " auswählen!"
+                                              , MessageDialogButton.OK);
+              scoreBox.addListener(changeScoreEvent(score, testMap, scoreBox));
+            }
           }
         }
-
-        DataHandler.updateTestMap(testMap);
-        DataHandler.updateTestAverage(Syllabus.updateAverage(testMap));
-      }
-    };
+      };
+      return changeScoreEventListener;
   }
   private void createAreYouSureScreen(WindowBasedTextGUI textGUI){
     new MessageDialogBuilder().setTitle("Titel")
@@ -582,5 +589,50 @@ public class Visual{
                               .addButton(MessageDialogButton.Close)
                               .build()
                               .showDialog(textGUI);
+  }
+  private boolean updateTestWpf(int selectedIndex, int previousSelection, String wpfTopic, Score score){
+    boolean isUpdated = false;
+    User user = DataHandler.getUser();
+    if(user.getTestWpfCounter() == null){
+      user.createTestWpfCounter();
+    }
+    if(user.getTestWpfCounter().get(wpfTopic) == null){
+      user.getTestWpfCounter().put(wpfTopic, 0);
+    }
+    if((user.getTestWpfCounter().get(wpfTopic)<score.getWpfWeight()[0]) && previousSelection == 0 && previousSelection != selectedIndex){
+      user.increaseTestWpfCounter(wpfTopic);
+      isUpdated = true;
+    }else if(selectedIndex == 0 && previousSelection != selectedIndex){
+      user.decreaseTestWpfCounter(wpfTopic);
+      isUpdated = true;
+    }
+    DataHandler.writeUser(user);
+    return isUpdated;
+  }
+  private void updateTestScore(Score score, HashMap<String, Score> testMap, ComboBox<String> scoreBox, int selectedIndex, int previousSelection){
+    if(!score.isTested() && selectedIndex != previousSelection){
+      float testScore = 0.0f;
+      if(!scoreBox.getSelectedItem().equals("-")){
+        testScore = Float.parseFloat(scoreBox.getSelectedItem());
+      }
+      if(score.hasParentScore()){
+        testMap.get(score.getParentStudienElement()).getSubScore().get(score.getStudienElement()).setIsTested();
+        testMap.get(score.getParentStudienElement()).setIsTested();
+        testMap.get(score.getParentStudienElement()).getSubScore().get(score.getStudienElement()).setScore(testScore);
+      }else{
+        testMap.get(score.getStudienElement()).setIsTested();
+        testMap.get(score.getStudienElement()).setScore(testScore);
+      }
+    }else if(selectedIndex != previousSelection){
+      float testScore = 0.0f;
+      if(!scoreBox.getSelectedItem().equals("-")){
+        testScore = Float.parseFloat(scoreBox.getSelectedItem());
+      }
+      if(score.hasParentScore()){
+        testMap.get(score.getParentStudienElement()).getSubScore().get(score.getStudienElement()).setScore(testScore);
+      }else{
+        testMap.get(score.getStudienElement()).setScore(testScore);
+      }
+    }
   }
 }

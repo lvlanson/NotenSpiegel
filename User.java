@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class User implements Serializable{
   private static final long serialVersionUID = 1;
@@ -7,6 +8,8 @@ public class User implements Serializable{
   private String fieldOfStudy;
   private float average;
   private float testAverage;
+  private HashMap<String, Integer> wpfCounter;
+  private HashMap<String, Integer> testWpfCounter;
 
   public User(String name, String course, String fieldOfStudy, float average){
     this.name = name;
@@ -14,11 +17,36 @@ public class User implements Serializable{
     this.fieldOfStudy = fieldOfStudy;
     this.average = average;
   }
+  public void increaseWpfCounter(String wpfTopic){
+    wpfCounter.put(wpfTopic, wpfCounter.get(wpfTopic)+1);
+  }
+  public void decreaseWpfCounter(String wpfTopic){
+    if(wpfCounter.get(wpfTopic) != 0){
+      wpfCounter.put(wpfTopic, wpfCounter.get(wpfTopic)-1);
+    }
+  }
+  public void increaseTestWpfCounter(String wpfTopic){
+    testWpfCounter.put(wpfTopic, testWpfCounter.get(wpfTopic)+1);
+  }
+  public void decreaseTestWpfCounter(String wpfTopic){
+    if(testWpfCounter.get(wpfTopic) != 0){
+      testWpfCounter.put(wpfTopic, testWpfCounter.get(wpfTopic)-1);
+    }
+  }
   public void setAverage(float average){
     this.average = average;
   }
   public void setTestAverage(float testAverage){
     this.testAverage = testAverage;
+  }
+  public void setWpfCounter(HashMap<String, Integer> wpfCounter){
+    this.wpfCounter = wpfCounter;
+  }
+  public void setTestWpfCounter(HashMap<String, Integer> testWpfCounter){
+    this.testWpfCounter = testWpfCounter;
+  }
+  public void createTestWpfCounter(){
+    this.testWpfCounter = new HashMap<String, Integer>();
   }
 
   public String getName(){
@@ -35,5 +63,11 @@ public class User implements Serializable{
   }
   public float getTestAverage(){
     return this.testAverage;
+  }
+  public HashMap<String, Integer> getWpfCounter(){
+    return this.wpfCounter;
+  }
+  public HashMap<String, Integer> getTestWpfCounter(){
+    return this.testWpfCounter;
   }
 }

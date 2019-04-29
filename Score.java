@@ -18,6 +18,7 @@ public class Score implements Serializable{
   private String parentStudienElement;
   private boolean hasParentScore = false;
 
+
   public Score(){
 
   }
@@ -171,6 +172,7 @@ public class Score implements Serializable{
   public void resetIsTested(){
     this.isTested = false;
   }
+
 
   public String toString(){
     String score = "studienElement: " + "\t"    + this.studienElement                     + "\n"

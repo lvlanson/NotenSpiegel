@@ -239,6 +239,7 @@ public class Syllabus{
         }
       }
       updateParentScore();
+      updateWpfCounter();
     }catch(IOException e){
       e.printStackTrace();
     }
@@ -286,6 +287,30 @@ public class Syllabus{
     }
     average = (float)((int)((average/denominator)*10))/10;
     return average;
+  }
+  private void updateWpfCounter(){
+    User user = DataHandler.getUser();
+    for(Score score: syllabusMap.values()){
+      if(score.hasSubScore()){
+        for(Score subScore: score.getSubScore().values()){
+          if(subScore.isWpf() && subScore.getScore() != 0){
+            if(user.getWpfCounter() == null){
+              user.setWpfCounter(new HashMap<String, Integer>());
+            }
+            user.increaseWpfCounter(subScore.getStudienElement());
+          }
+        }
+      }
+      if(score.isWpf()){
+        if(score.isWpf() && score.getScore() != 0){
+          if(user.getWpfCounter() == null){
+            user.setWpfCounter(new HashMap<String, Integer>());
+          }
+          user.increaseWpfCounter(score.getStudienElement());
+        }
+      }
+    }
+    DataHandler.writeUser(user);
   }
   private static void updateParentScore(HashMap<String, Score> syllabusMap){
     for(Score score: syllabusMap.values()){
@@ -376,4 +401,5 @@ public class Syllabus{
   public float getAverage(){
     return this.average;
   }
+
 }

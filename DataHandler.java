@@ -212,4 +212,38 @@ public class DataHandler{
     user.setTestAverage(score);
     writeUser(user);
   }
+  public static void createTestWpfCounter(){
+    File file = new File(userPath);
+    User user = null;
+    if(!file.exists()){
+      ObjectInputStream ois = null;
+      ObjectOutputStream oos = null;
+      try{
+        ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(userPath)));
+        user = (User) ois.readObject();
+        user.setTestWpfCounter(user.getWpfCounter());
+        oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(userPath)));
+        oos.writeObject(user);
+      }catch(IOException e){
+        e.printStackTrace();
+      }catch(ClassNotFoundException e){
+        e.printStackTrace();
+      }finally{
+        if(ois != null){
+          try{
+            ois.close();
+          }catch(IOException e){
+            e.printStackTrace();
+          }
+        }
+        if(oos != null){
+          try{
+            ois.close();
+          }catch(IOException e){
+            e.printStackTrace();
+          }
+        }
+      }
+    }
+  }
 }
