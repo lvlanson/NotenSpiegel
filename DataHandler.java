@@ -165,6 +165,8 @@ public class DataHandler{
 
         e.printStackTrace();
       }
+      User user = getUser();
+      user.setTestAverage(user.getAverage());
     }
   }
   public static HashMap<String,Score> getTestMap(){
@@ -245,5 +247,9 @@ public class DataHandler{
         }
       }
     }
+  }
+  public static void removeTestFile(){
+    File file = new File(testPath);
+    file.delete();
   }
 }

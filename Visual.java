@@ -19,6 +19,7 @@ import com.googlecode.lanterna.gui2.Window;
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
 import com.googlecode.lanterna.gui2.ProgressBar;
 import com.googlecode.lanterna.gui2.CheckBox;
+import com.googlecode.lanterna.gui2.Component;
 import com.googlecode.lanterna.gui2.WindowBasedTextGUI;
 import com.googlecode.lanterna.gui2.RadioBoxList;
 import com.googlecode.lanterna.gui2.Direction;
@@ -37,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class Visual{
   private DefaultTerminalFactory terminalFactory = null;
@@ -261,7 +263,7 @@ public class Visual{
                                false,                          // Give the component extra vertical space if available
                                2,                              // Horizontal span
                                1));
-    Label note = new Label("" + user.getAverage());
+    Label note = new Label("" + user.getTestAverage());
     note.addStyle(SGR.BOLD);
     notenPanel.addComponent(durchschnitt);
     notenPanel.addComponent(note);
@@ -584,11 +586,33 @@ public class Visual{
       return changeScoreEventListener;
   }
   private void createAreYouSureScreen(WindowBasedTextGUI textGUI){
-    new MessageDialogBuilder().setTitle("Titel")
-                              .setText("Message")
-                              .addButton(MessageDialogButton.Close)
-                              .build()
-                              .showDialog(textGUI);
+    MessageDialog message = new MessageDialogBuilder()
+                              .setTitle("Tester Zurücksetzen")
+                              .setText("Sind Sie sicher, dass Sie den Tester zurücksetzen wollen?")
+                              .addButton(MessageDialogButton.Cancel)
+                              .addButton(MessageDialogButton.OK)
+                              .build();
+    Panel basePanel = (Panel) message.getComponent();
+    Panel buttonPanel = null;
+    for(Object obj: basePanel.getChildren()){
+      if(obj instanceof Panel){
+        buttonPanel = (Panel) obj;
+      }
+    }
+    Button okayButton = null;
+    for(Object obj: buttonPanel.getChildren()){
+      Button btn = (Button) obj;
+      if(btn.getLabel().equals("Ok")){
+        okayButton = btn;
+      }
+    }
+    okayButton.addListener(new Button.Listener(){
+      @Override
+      public void onTriggered(Button button){
+        DataHandler.removeTestFile();
+      }
+    });
+    message.showDialog(textGUI);
   }
   private boolean updateTestWpf(int selectedIndex, int previousSelection, String wpfTopic, Score score){
     boolean isUpdated = false;
