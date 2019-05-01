@@ -25,7 +25,7 @@ public class Tester{
         e.printStackTrace();
       }
 
-      HashMap<String, Score> syllabusMap = DataHandler.getTestMap();
+      /*HashMap<String, Score> syllabusMap = DataHandler.getTestMap();
       System.out.println("Testmap:");
       System.out.println(syllabusMap.get("2120").getSubScore().get("2120(T1)").hasParentScore());
       /*Iterator it = syllabusMap.entrySet().iterator();
@@ -38,14 +38,14 @@ public class Tester{
 
 
         it.remove();
-      }*/
+      }
 
       User user = DataHandler.getUser();
       for(HashMap.Entry<String, Integer> set: user.getTestWpfCounter().entrySet()){
         int count = set.getValue();
         String studEl = set.getKey();
         System.out.println("studel: " + studEl + "|| count: " + count);
-      }
+      }*/
     }catch(IOException e){
       e.printStackTrace();
     }finally{

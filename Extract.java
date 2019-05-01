@@ -86,4 +86,9 @@ public class Extract{
     }
     return semester;
   }
+  public static int level(String snippet){
+    snippet = snippet.substring(snippet.indexOf("SysTreeLevel")+"SysTreeLevel".length());
+    snippet = snippet.substring(0, snippet.indexOf("\""));
+    return Integer.parseInt(snippet);
+  }
 }

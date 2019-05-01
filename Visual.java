@@ -599,7 +599,9 @@ public class Visual{
     if(user.getTestWpfCounter().get(wpfTopic) == null){
       user.getTestWpfCounter().put(wpfTopic, 0);
     }
-    if((user.getTestWpfCounter().get(wpfTopic)<score.getWpfWeight()[0]) && previousSelection == 0 && previousSelection != selectedIndex){
+    if(previousSelection != 0 && selectedIndex !=0){
+      isUpdated = true;
+    }else if((user.getTestWpfCounter().get(wpfTopic)<score.getWpfWeight()[0]) && previousSelection == 0 && previousSelection != selectedIndex){
       user.increaseTestWpfCounter(wpfTopic);
       isUpdated = true;
     }else if(selectedIndex == 0 && previousSelection != selectedIndex){

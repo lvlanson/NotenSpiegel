@@ -117,16 +117,24 @@ public class Syllabus{
     int indentLevel = Integer.parseInt(readLine.substring(0,readLine.indexOf("\"")));
     boolean wpfFound = false;
     int[] wpfWeight = {0, 0};
+    int wpfTreeLevel = 0;
     String wpfTopic = "";
     while(!(line = reader.readLine()).contains("SysTreeLevel"+indentLevel)){
       if(line.contains("EmSE MobileMain Name")){
         if(line.contains("WPF")){
-            wpfFound = true;
-            wpfWeight = Extract.wpfWeight(line);
-            wpfTopic = Extract.wpfTopic(line);
-            continue;
+          wpfFound = true;
+          wpfWeight = Extract.wpfWeight(line);
+          wpfTopic = Extract.wpfTopic(line);
+          continue;
+        }
+        if(wpfFound && wpfTreeLevel>Extract.level(line) && Extract.syllabusStudienElement(line).length()<=4){
+          wpfFound = false;
+          wpfTreeLevel = 0;
         }
         if(wpfFound){
+          if(Extract.syllabusStudienElement(line).length() <= 4){
+            wpfTreeLevel = Extract.level(line);
+          }
           String studienElement = Extract.syllabusStudienElement(line);
           if(studienElement.contains(lastStudienElement) && lastStudienElement.length()>0){
             isSubScore = true;
@@ -401,5 +409,4 @@ public class Syllabus{
   public float getAverage(){
     return this.average;
   }
-
 }
