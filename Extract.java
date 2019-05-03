@@ -77,6 +77,7 @@ public class Extract{
   }
   public static String wpfTopic(String snippet){
     snippet = snippet.substring(snippet.lastIndexOf("WPF ")+"WPF ".length(), snippet.lastIndexOf('('));
+    snippet = snippet.trim();
     return snippet;
   }
   public static int semester(String snippet){

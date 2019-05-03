@@ -576,7 +576,7 @@ public class Visual{
               }
               MessageDialog.showMessageDialog(textGUI,
                                               "Achtung", "Du kannst maximal " + score.getWpfWeight()[0]
-                                              + " " + module +" in " + score.getWpfTopic() + " auswählen!"
+                                              + " " + module +" in " + score.getWpfTopic() + "auswählen!"
                                               , MessageDialogButton.OK);
               scoreBox.addListener(changeScoreEvent(score, testMap, scoreBox));
             }
