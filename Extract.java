@@ -58,7 +58,6 @@ public class Extract{
     if(snippet.contains("&amp;")){
       snippet = snippet.replace("&amp;", "&");
     }
-    System.out.println(snippet);
     return snippet;
   }
   public static int[] syllabusWeight(String snippet){
