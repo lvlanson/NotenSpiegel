@@ -8,14 +8,14 @@ import java.util.HashMap;
 
 public class Tester{
   public static void main(String[] args){
-    System.out.println("Please Enter your Username:");
+    /*System.out.println("Please Enter your Username:");
     String username = System.console().readLine();
 
     System.out.println("Please Enter your Password:");
     String password = String.copyValueOf(System.console().readPassword());
     Hsmw.getDataFromHSMW(username, password);
-
-    /*InputStream in = null;
+*/
+    InputStream in = null;
     InputStream in2 = null;
     InputStream in3 = null;
     try{
@@ -52,7 +52,7 @@ public class Tester{
         int count = set.getValue();
         String studEl = set.getKey();
         System.out.println("studel: " + studEl + "|| count: " + count);
-      }
+      }*/
     }catch(IOException e){
       e.printStackTrace();
     }finally{
@@ -70,6 +70,6 @@ public class Tester{
           e.printStackTrace();
         }
       }
-    }*/
+    }
   }
 }

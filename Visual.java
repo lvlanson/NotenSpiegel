@@ -254,7 +254,7 @@ public class Visual{
     }
   }
   private void drawAverage(User user, Panel notenPanel){
-    Label durchschnitt = new Label("Durschnitt: ");
+    Label durchschnitt = new Label("Durchschnitt: ");
     durchschnitt.addStyle(SGR.BOLD);
     durchschnitt.setLayoutData(GridLayout.createLayoutData(
                                GridLayout.Alignment.BEGINNING, // Horizontal alignment in the grid cell if the cell is larger than the component's preferred size
@@ -451,7 +451,7 @@ public class Visual{
     }
   }
   private void drawTestAverage(Panel notenPanel){
-    Label durchschnitt = new Label("Durschnitt: ");
+    Label durchschnitt = new Label("Durchschnitt: ");
     durchschnitt.addStyle(SGR.BOLD);
     durchschnitt.setLayoutData(GridLayout.createLayoutData(
                                GridLayout.Alignment.BEGINNING, // Horizontal alignment in the grid cell if the cell is larger than the component's preferred size

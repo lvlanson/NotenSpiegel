@@ -55,6 +55,10 @@ public class Extract{
   public static String syllabusSubject(String snippet){
     snippet = snippet.substring(snippet.lastIndexOf("</a>")+"</a>".length());
     snippet = snippet.substring(1,snippet.indexOf('<'));
+    if(snippet.contains("&amp;")){
+      snippet = snippet.replace("&amp;", "&");
+    }
+    System.out.println(snippet);
     return snippet;
   }
   public static int[] syllabusWeight(String snippet){
