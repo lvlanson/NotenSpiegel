@@ -23,15 +23,16 @@ public class Score implements Serializable{
 
   }
 
-  public Score(String studEl, String subject,int semester, int[] weight){
+  public Score(String studEl, String subject,int semester, int[] weight, float score){
     this.studienElement = studEl;
     this.subject = subject;
     this.weight = new int[2];
     this.weight[0] = weight[0];
     this.weight[1] = weight[1];
     this.semester = semester;
+    this.score = score;
   }
-  public Score(String studEl, String subject,int semester, int[] weight, String parentStudienElement){
+  public Score(String studEl, String subject,int semester, int[] weight, String parentStudienElement, float score){
     this.studienElement = studEl;
     this.subject = subject;
     this.weight = new int[2];
@@ -40,8 +41,9 @@ public class Score implements Serializable{
     this.semester = semester;
     this.parentStudienElement = parentStudienElement;
     this.hasParentScore = true;
+    this.score = score;
   }
-  public Score(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic){
+  public Score(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic, float score){
     this.studienElement = studEl;
     this.subject = subject;
     this.weight = new int[2];
@@ -53,8 +55,9 @@ public class Score implements Serializable{
     this.wpfWeight[1] = wpfWeight[1];
     this.wpfTopic = wpfTopic;
     this.semester = semester;
+    this.score = score;
   }
-  public Score(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic, String parentStudienElement){
+  public Score(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic, String parentStudienElement, float score){
     this.studienElement = studEl;
     this.subject = subject;
     this.weight = new int[2];
@@ -68,6 +71,7 @@ public class Score implements Serializable{
     this.semester = semester;
     this.parentStudienElement = parentStudienElement;
     this.hasParentScore = true;
+    this.score = score;
   }
   public String getStudienElement(){
     return this.studienElement;
@@ -138,21 +142,22 @@ public class Score implements Serializable{
     this.weight[0] = denominator;
     this.weight[1] = numerator;
   }
-  public void setSubScore(String studEl, String subject,int semester, int[] weight, String parentStudienElement){
+  public void setSubScore(String studEl, String subject,int semester, int[] weight, String parentStudienElement, float score){
     if(!hasSubScore){
       this.subScore = new HashMap<String, Score>();
-      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, parentStudienElement));
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, parentStudienElement, score));
       this.setSubScore();
     }else{
-      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, parentStudienElement));
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, parentStudienElement, score));
     }
   }
-  public void setSubScore(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic, String parentStudienElement){
+  public void setSubScore(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic, String parentStudienElement, float score){
     if(!hasSubScore){
       this.subScore = new HashMap<String, Score>();
-      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, isWpf, wpfWeight, wpfTopic, parentStudienElement));
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, isWpf, wpfWeight, wpfTopic, parentStudienElement, score));
+      this.setSubScore();
     }else{
-      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, isWpf, wpfWeight, wpfTopic, parentStudienElement));
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, isWpf, wpfWeight, wpfTopic, parentStudienElement, score));
     }
   }
   public void setWpfTopic(String wpfTopic){

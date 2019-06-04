@@ -11,11 +11,12 @@ public class User implements Serializable{
   private HashMap<String, Integer> wpfCounter;
   private HashMap<String, Integer> testWpfCounter;
 
-  public User(String name, String course, String fieldOfStudy, float average){
+  public User(String name, String course, String fieldOfStudy, float average, float testAverage){
     this.name = name;
     this.course = course;
     this.fieldOfStudy = fieldOfStudy;
     this.average = average;
+    this.testAverage = testAverage;
   }
   public void increaseWpfCounter(String wpfTopic){
     wpfCounter.put(wpfTopic, wpfCounter.get(wpfTopic)+1);

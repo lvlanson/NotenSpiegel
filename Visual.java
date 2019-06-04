@@ -28,6 +28,8 @@ import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialogBuilder;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TerminalPosition;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -39,6 +41,8 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.net.MalformedURLException;
+
 
 public class Visual{
   private DefaultTerminalFactory terminalFactory = null;
@@ -66,6 +70,9 @@ public class Visual{
     welcomePanel.addComponent(new Button("Noten anzeigen", new Runnable(){
       @Override
       public void run(){
+        if(!DataHandler.testfileExists()){
+
+        }
         createScoreScreen();
       }
     }));
@@ -81,10 +88,10 @@ public class Visual{
         createAreYouSureScreen(textGUI);
       }
     }));
-    welcomePanel.addComponent(new Button("Noten speichern", new Runnable(){
+    welcomePanel.addComponent(new Button("Noten updaten", new Runnable(){
       @Override
       public void run(){
-        window.close();
+        updateData();
       }
     }));
     welcomePanel.addComponent(new Button("Exit", new Runnable(){
@@ -124,7 +131,8 @@ public class Visual{
     textGUI.addWindowAndWait(window);
   }
   private void drawSemesters(HashMap<Integer, ArrayList<Score>> sortedMap, Panel notenPanel, int indent){
-    for(int i = 0; i<sortedMap.size(); i++){
+    System.out.println(sortedMap.size());
+    for(int i = 0; i<=sortedMap.size(); i++){
       HashMap<String,ArrayList<Score>> wpfMap = new HashMap<String, ArrayList<Score>>();
       Label heading = null;
       if(i == 0 && sortedMap.get(i) != null){
@@ -220,7 +228,7 @@ public class Visual{
         notenPanel.addComponent(attempts);
         notenPanel.addComponent(score);
         if(scoreSet.hasSubScore()){
-          drawScores(scoreSet.getSubScore(), notenPanel, 2);
+          drawScores(scoreSet.getSubScore(), notenPanel, 3);
         }
       }
       it.remove();
@@ -263,7 +271,7 @@ public class Visual{
                                false,                          // Give the component extra vertical space if available
                                2,                              // Horizontal span
                                1));
-    Label note = new Label("" + user.getTestAverage());
+    Label note = new Label("" + user.getAverage());
     note.addStyle(SGR.BOLD);
     notenPanel.addComponent(durchschnitt);
     notenPanel.addComponent(note);
@@ -300,7 +308,7 @@ public class Visual{
     textGUI.addWindowAndWait(window);
   }
   private void drawTestSemesters(HashMap<Integer, ArrayList<Score>> sortedMap, Panel notenPanel, int indent, HashMap<String,Score> testMap){
-    for(int i = 0; i<sortedMap.size(); i++){
+    for(int i = 0; i<=sortedMap.size(); i++){
       HashMap<String,ArrayList<Score>> wpfMap = new HashMap<String, ArrayList<Score>>();
       Label heading = null;
       if(i == 0 && sortedMap.get(i) != null){
@@ -444,7 +452,7 @@ public class Visual{
         }
         notenPanel.addComponent(scoreBox);
         if(scoreSet.hasSubScore()){
-          drawScores(scoreSet.getSubScore(), notenPanel, 2);
+          drawScores(scoreSet.getSubScore(), notenPanel, 3);
         }
       }
       it.remove();
@@ -512,7 +520,13 @@ public class Visual{
   public void run(){
     try{
       screen.startScreen();
-      createWelcomeWindow();
+      if(DataHandler.mainfileExists()){
+        createWelcomeWindow();
+      }else{
+        updateData();
+        createWelcomeWindow();
+      }
+
     }catch(IOException e){
       e.printStackTrace();
     }
@@ -660,5 +674,56 @@ public class Visual{
         testMap.get(score.getStudienElement()).setScore(testScore);
       }
     }
+  }
+  private void updateData(){
+    final Window updateWindow = new BasicWindow("Login");
+    Panel   panel             = new Panel(new GridLayout(2));
+    Label   userLabel         = new Label("HSMW-Username:");
+    Label   passwordLabel     = new Label("HSMW-Passwort:");
+    TextBox userText          = new TextBox();
+    TextBox passwordText      = new TextBox();
+    GridLayout gridLayout = (GridLayout) panel.getLayoutManager();
+    gridLayout.setHorizontalSpacing(4);
+    passwordText.setMask('*');
+    userText.setPreferredSize(new TerminalSize(25,1));
+    passwordText.setPreferredSize(new TerminalSize(25,1));
+    panel.addComponent(new EmptySpace().setLayoutData(
+                        GridLayout.createHorizontallyFilledLayoutData(2)
+                      ));
+    panel.addComponent(userLabel);
+    panel.addComponent(userText);
+    panel.addComponent(passwordLabel);
+    panel.addComponent(passwordText);
+    panel.addComponent(new Button("Abbruch", new Runnable(){
+      @Override
+      public void run(){
+        updateWindow.close();
+      }
+    }));
+    panel.addComponent(new Button("Okay", new Runnable(){
+      @Override
+      public void run(){
+        String username = userText.getText();
+        String password = passwordText.getText();
+        try{
+          Hsmw.createDataFromHSMW(username, password);
+        }catch(MalformedURLException e){
+          MessageDialog.showMessageDialog(textGUI, "Ups", "Konnte die Internetseite nicht finden");
+        }catch(IOException e){
+          MessageDialog.showMessageDialog(textGUI, "Ups", "Das Lesen oder Schreiben ist schief gegangen");
+        }catch(StringIndexOutOfBoundsException e){
+          MessageDialog.showMessageDialog(textGUI, "Ups", "Passwort vielleicht falsch?");
+        }catch(Exception e){
+          MessageDialog.showMessageDialog(textGUI, "Ups", "Etwas ist schief gegangen");
+          //e.printStackTrace();
+        }
+
+        updateWindow.close();
+      }
+    }));
+    updateWindow.setComponent(panel);
+    textGUI.addWindowAndWait(updateWindow);
+    updateWindow.setSize(new TerminalSize(650,650));
+    updateWindow.setPosition(new TerminalPosition(0,0));
   }
 }

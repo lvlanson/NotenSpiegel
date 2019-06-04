@@ -10,7 +10,6 @@ public class Extract{
     return snippet;
   }
   public static float score(String snippet){
-    snippet = snippet.substring(snippet.indexOf('>')+1);
     snippet = snippet.substring(snippet.indexOf('>'));
     snippet = snippet.substring(1,snippet.indexOf('<'))
                      .replace(',','.');
@@ -35,13 +34,13 @@ public class Extract{
     return snippet;
   }
   public static String name(String snippet){
-    snippet = snippet.substring(snippet.indexOf("\"Label\""));
+    snippet = snippet.substring(snippet.indexOf("'Label'"));
     snippet = snippet.substring(snippet.indexOf('>'));
     snippet = snippet.substring(1,snippet.indexOf('<'));
     return snippet;
   }
   public static String course(String snippet){
-    snippet = snippet.substring(snippet.indexOf("\"Label\""));
+    snippet = snippet.substring(snippet.indexOf("'Label'"));
     snippet = snippet.substring(snippet.indexOf('>'));
     snippet = snippet.substring(1,snippet.indexOf('<'));
     return snippet;
@@ -82,17 +81,16 @@ public class Extract{
   }
   public static int semester(String snippet){
     int semester = 0;
-    if(snippet.contains("Em1234")){
-      int length = snippet.substring(snippet.indexOf('>')+1,snippet.lastIndexOf('<')).length();
-      if(length>0){
-        semester = Integer.parseInt(snippet.substring(snippet.indexOf('S')+1,snippet.lastIndexOf('"')));
-      }
+    snippet = snippet.substring(snippet.indexOf('>'));
+    snippet = snippet.substring(1,snippet.indexOf('<')).trim();
+    if(snippet.length()>0){
+      semester = Integer.parseInt(snippet);
     }
     return semester;
   }
   public static int level(String snippet){
     snippet = snippet.substring(snippet.indexOf("SysTreeLevel")+"SysTreeLevel".length());
-    snippet = snippet.substring(0, snippet.indexOf("\""));
+    snippet = snippet.substring(0, snippet.indexOf("'"));
     return Integer.parseInt(snippet);
   }
 }

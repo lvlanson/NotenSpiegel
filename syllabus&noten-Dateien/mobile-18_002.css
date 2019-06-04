@@ -1,0 +1,245 @@
+/*------------------------------------------------------------------------------------------
+Copyright 2003-2016 Falk Neuner, nsoft.de
+Ausführung, Bearbeitung, Unterlizensierung nur mit ausdrücklicher Erlaubnis des Urhebers
+/*------------------------------------------------------------------------------------------
+Usage: Anpassungen mobiles Template HSMW
+Model: Stil/5429
+Version: mobile-17.3.1.css
+/*------------------------------------------------------------------------------------------
+abgeleitet von HDS
+------------------------------------------------------------------------------------------*/
+@import url(../../layouts/default/mobile-17.3.1.css);
+@import url(../../styles/default/grids-18.4.css);
+
+html, body 
+{ 
+	height: 100% !important;
+}
+
+/*------------------------------------------------------------------------------------------
+Ausblenden
+------------------------------------------------------------------------------------------*/
+	#naviService,
+	#naviMain,
+	#layoutFoot,
+	#layout_svselect,
+	#header_jqCellCmsPageContent,#jqCellCmsPageContent,
+	div.navpath,
+	div.right div.CsAreaVContent,
+	div.left
+	{
+		display:none;
+	}
+
+	
+	body div.head
+	{
+		background-image: url(top-mobile-540x52.png) !important; 
+	}
+	
+/*---------------------------------------------------------------------------------------------
+Popup: nicht benötigte Screen-Elemente ausblenden
+	#naviService,
+	div.popup div.head,
+	div.popup div.navpath,
+	div.popup div.menu,
+	div.popup div.left,
+	div.popup div.right
+	{
+		display: none;
+	}
+	div.popup #jqCellHDS_MobileButtons {
+	    background: none;
+	}
+-----------------------------------------------------------------------------------------------*/
+	
+	/*ausgewählte Sprache*/
+	#mobile_service a.Selected ,
+	#mobile_service .Selected a
+	{
+		padding: 0 5px 0 0;
+		/*border-left: 5px solid #00007f;*/
+		border-right: 5px solid #00007f;
+		/*background: #c0c0c0;*/
+		/*border: 1px solid #00007f;*/
+	}
+	
+	/*SV-Selector in layout_login*/
+	div.SVSelector
+	{
+		padding-bottom: 10px;
+	}
+	div.SVSelector font
+	{
+		display: block;
+	}
+	div.SVSelector img
+	{
+		width: 26px !important;
+		height: 26px !important;
+	}
+	
+	/*TODO Direktzugang*/
+	/*http://stackoverflow.com/questions/28578854/css-button-image-resizing*/
+	div.normal div.CmsPlainTextCell input#buttom:
+	{
+ 	   /*background-size: 26px 26px !important;*/
+	}
+
+/*------------------------------------------------------------------------------------------
+Aufzählungen mit background realisieren wegen Größe/Position
+------------------------------------------------------------------------------------------*/
+	body ul 
+	{
+		list-style: none !important;
+	}
+	body ul li 
+	{
+		list-style-image: none !important;
+	    padding: 0 0 0 30px !important;
+	    margin: 1px 0 0 -30px !important;
+		background-image: url(../hsmw2016/bullet-quad.png);
+	    background-size: 10px 10px !important;
+		background-repeat: no-repeat;
+		background-position: 10px 10px;
+	}
+	body ul ul li,
+	body ul ul ul li 
+	{
+	    background-size: 10px 10px !important;
+	}
+
+/*------------------------------------------------------------------------------------------
+Mobile Grids Linien
+------------------------------------------------------------------------------------------*/
+	div.MobileFloat tr,
+	div.MobileScroll tr,
+	table.MobileGrid tr { border-top: 2px solid #808080; background-color: inherit; }
+	table.MobileGrid tr td,
+	table.MobileGrid tr th,
+	div.MobileFloat table.AppGrid tr td,
+	div.MobileFloat table.AppGrid tr th,
+	div.MobileScroll table.AppGrid tr td,
+	div.MobileScroll table.AppGrid tr th { border-top: 0; }
+
+/*Notenanzeige Modul hervorheben*/
+div.MobileScroll table.SapTreeSLnoten .typ0, 
+div.MobileScroll table.SapTreeSLnoten .typ4, 
+div.MobileScroll table.SapTreeSLnoten .typ9 
+	{ border-top: 0; }
+	
+/*------------------------------------------------------------------------------------------
+Farbanpassungen
+siehe auch PHP-seitiges Switch in HDS_MobileButtons
+------------------------------------------------------------------------------------------*/
+	#jqCellHDS_MobileButtons img
+	{
+		border-color: #296bb7;
+	}	
+	.MobilePopup
+	{
+		border-color: #296bb7 !important;
+		background: #f0f0f0 !important;
+	}	
+	.MobilePopup table.SearchForm div.Suchfeld span
+	{
+		color: #296bb7 !important;
+	}
+	.MobilePopup a.SysButtonsBottom
+	{
+	    border-color: #296bb7 !important;
+		background: #296bb7 !important;
+	}
+	div.CmsPluginCell button
+	{
+	    border-color: #296bb7 !important;
+		background: #296bb7 !important;
+	}
+	#layout_search form button
+	{
+	    border-color: #296bb7 !important;
+		background: #296bb7 !important;
+	}
+
+	/*Tabs mit CSS-Border*/
+	div.SysTabControl1_sel,
+	div.SysTabControl2_sel,
+	div.SysTabControl3_sel
+	{
+		background: #2a6bb7;
+	}
+	div.SysTabControlF 
+	{		
+		border-color: #2a6bb7;
+	}
+	
+/*---------------------------------------------------------------------------------------------
+Studentenportal
+---------------------------------------------------------------------------------------------*/
+#jqCell19194
+{
+	padding-bottom: 0;
+}
+div.page6225 div.CmsTiny2004Cell
+{
+	padding-bottom: 10px;
+}
+div.page6225 div.Width3
+{
+	position: relative;
+}
+div.page6225 div.CmsTiny2004Cell 
+{
+    overflow-x: visible;
+	position: inherit;
+}
+div.page6225 div.Width1 h2
+{
+	text-align: center;
+	background: #f0f0f0;
+	padding: 5px 0 5px 0;
+	border: 1px solid #808080;
+	font-weight: bold;
+	font-size: 20px;
+}
+div.page6225 div.Width1 div.CmsCell:hover h2
+{
+	background: #F5F8ED;
+	color: #4E7C32;
+}
+
+div.page6225 div.Width1 div.RenderContent
+{
+	display: none;
+	position: absolute;
+	top: 52px;
+    right: 10px;
+	width: 500px;
+	/*height: 200px;*/
+	z-index: 99;
+	float: none;
+	padding: 10px 10px 0 10px;
+	
+	
+	border: 1px solid #58A12C;
+	border-left: 10px solid #58A12C;
+	border-radius: 0px;
+	background: #F5F8ED;
+	color: #4E7C32;
+	/*invers*/
+	background: #58A12C;
+	color: #ffffff;
+	
+}
+div.page6225 div.Width1 div.RenderContent a
+{
+	color: #58A12C;
+	/*invers*/
+	color: #ffffff;
+}
+div.page6225 div.Width1 div.CmsCell:hover div.RenderContent
+{
+	display: block;
+}
+	
+	

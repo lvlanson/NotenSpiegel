@@ -1,0 +1,45 @@
+/*------------------------------------------------------------------------------------------
+Copyright 2003-2014 Falk Neuner, nsoft.de
+Ausführung, Bearbeitung, Unterlizensierung nur mit ausdrücklicher Erlaubnis des Urhebers
+/*------------------------------------------------------------------------------------------
+Usage: Template 3 Spalten, HSMW mit Mobile
+Model: ???
+/*------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------*/
+div.Main450 table.AppForm {	min-width:450px;max-width:450px;width:450px; }
+div.Main450 table.AppGrid { min-width:450px;max-width:450px;width:450px; }
+
+/*wegen forms.css muss AppFormCol2 min 310 haben*/
+div.Main450 td.AppFormCol1 {width: 140px;min-width: 140px;max-width: 140px; }
+div.Main450 td.AppFormCol2 {width: 310px;}
+div.Main450 td.AppFormCol12 {width: 310px;}
+div.Main450 td.AppFormCol23 {width: 310px;min-width: 310px;max-width: 310px; }
+div.Main450 td.AppFormCol3 {display: none;}
+
+/*Konatkanzeige + Maps*/
+div.Main450 table.AppForm12 {width: 310px;}
+
+/*------------------------------------------------------------------------------------------
+Float-Form, verwendet die CmsPageInfo, CmsPageOperations
+------------------------------------------------------------------------------------------*/
+div.Main450 div.main div.AppForm {	width: 450px; }
+div.Main450 div.main div.AppFormCol1 {width: 140px;float: left;}
+div.Main450 div.main div.AppFormCol2 {width: 310px;float: left;}
+div.Main450 div.main div.AppFormCol12 {width: 450px;float: left;}
+div.Main450 div.main div.AppFormCol23 {width: 310px;float: left;}
+div.Main450 div.main div.AppFormCol3 {display: none}
+
+div.left div.AppForm {	}
+div.left div.AppForm div {padding: 0 5px 0 5px; }
+div.left div.AppForm {font-size: 8pt; color: #808080; padding-bottom: 5px; }
+div.left div.AppFormCol1 {border-top: solid 0px #808080; margin-bottom:5px; }
+div.left div.AppFormCol1 p.SysFormsInfoLabel {text-align: left;}
+
+
+/*---------------------------------------------------------------------------------------------
+bottom.css
+-----------------------------------------------------------------------------------------------*/
+div.Main450 div.foot300r 
+{
+	width: 200px;
+}

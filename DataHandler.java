@@ -143,6 +143,24 @@ public class DataHandler{
       }
     return exists;
   }
+  public static boolean userfileExists(){
+    File file = null;
+    boolean exists = false;
+      file = new File(userPath);
+      if(file.exists()){
+        exists = true;
+      }
+    return exists;
+  }
+  public static boolean mainfileExists(){
+    File file = null;
+    boolean exists = false;
+      file = new File(syllabusPath);
+      if(file.exists()){
+        exists = true;
+      }
+    return exists;
+  }
   public static void createTestfile(){
     File testFile = null;
     HashMap<String, Score> syllabusMap = null;

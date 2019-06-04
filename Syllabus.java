@@ -16,15 +16,6 @@ public class Syllabus{
   private int lastSemester;
   private float average;
 
-  private int findSemester(BufferedReader reader) throws IOException{
-    String line = reader.readLine();
-    int semester = Extract.semester(line);
-    while(semester == 0 && !line.contains("S8")){
-      line = reader.readLine();
-      semester = Extract.semester(line);
-    }
-    return semester;
-  }
   private void findStudyInformation(InputStream in){
     //is found on https://www.intranet.hs-mittweida.de/sportal/his/studenten/student.info.asp?referer=&page_id=6527
     //Studentenportal -> Mein Studium
@@ -35,33 +26,23 @@ public class Syllabus{
       boolean fieldOfStudyFound = false;
       boolean nameFound         = false;
       boolean courseFound       = false;
-      boolean findFOS           = true;
-      boolean findName          = true;
-      boolean findCourse        = true;
 
       while((line = reader.readLine()) != null){
-        if(findFOS && !fieldOfStudyFound && line.contains("Studienrichtung:")){
-          fieldOfStudyFound = true;
-          continue;
-        }else if(findFOS && fieldOfStudyFound && line.contains("<p")){
-          fieldOfStudy = Extract.fieldOfStudy(line);
-          findFOS = false;
-        }
-        if(findName && !nameFound && line.contains("Name:")){
-          nameFound = true;
-          continue;
-        }else if(findName && nameFound && line.contains("class=\"Label\"")){
+        if(!nameFound && line.contains("Name:")){
+          line = skipTo(reader, "Label");
           name = Extract.name(line);
-          findName = false;
-        }
-        if(findCourse && !courseFound && line.contains("Studiengang:")){
-          courseFound = true;
-          continue;
-        }else if(findCourse && courseFound && line.contains("class=\"Label\"")){
+          nameFound = true;
+        }else if(!fieldOfStudyFound && line.contains("Studienrichtung:")){
+          line = skipTo(reader, "SysButtonIconText");
+          fieldOfStudy = Extract.fieldOfStudy(line);
+          fieldOfStudyFound = true;
+        }else if(!courseFound && line.contains("Studiengang:")){
+          line = skipTo(reader, "SysButtonIconText");
           course = Extract.course(line);
-          findCourse = false;
+          courseFound = true;
         }
-        if(!findFOS && !findName && !findCourse){
+
+        if(courseFound && fieldOfStudyFound && nameFound){
           break;
         }
 
@@ -82,27 +63,35 @@ public class Syllabus{
     lastSemester = 0;
     String line = "";
     String lastStudienElement = "";
+    Float score = 0.0f;
+
     boolean isSubScore = false;
     while(!(line = reader.readLine()).contains("typ8")){
-      if(line.contains("EmSE MobileMain Name")){
+      if(line.contains("EmSE EmFlex Name")){
         String studienElement = Extract.syllabusStudienElement(line);
         if(studienElement.contains(lastStudienElement) && lastStudienElement.length()>0){
           isSubScore = true;
         }
         String subject = Extract.syllabusSubject(line);
-        int semester = findSemester(reader);
+
+        int[] weight = new int[2];
+        line = skipTo(reader, "pruefung PGew");
+        weight = Extract.syllabusWeight(line);
+
+        line = skipTo(reader, "pruefung RF");
+        int semester = Extract.semester(line);
         if(lastSemester < semester){
           lastSemester = semester;
         }
-        int[] weight = new int[2];
-        while(!(line = reader.readLine()).contains("PGew")){
-        }
-        weight = Extract.syllabusWeight(line);
+
+        line = skipTo(reader, "note GNote");
+        score = Extract.score(line);
+
         if(isSubScore){
-          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement);
+          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement, score);
           isSubScore = false;
         }else{
-          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
+          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, score));
           lastStudienElement = studienElement;
         }
       }
@@ -110,17 +99,22 @@ public class Syllabus{
     return true;
   }
   private boolean collectSpecialSyllabus(BufferedReader reader, String readLine) throws IOException{
-    String line = "";
-    String lastStudienElement = "";
-    boolean isSubScore = false;
-    readLine = readLine.substring(readLine.indexOf("SysTreeLevel")+"SysTreeLevel".length());
-    int indentLevel = Integer.parseInt(readLine.substring(0,readLine.indexOf("\"")));
-    boolean wpfFound = false;
-    int[] wpfWeight = {0, 0};
-    int wpfTreeLevel = 0;
-    String wpfTopic = "";
+    String      line                = "";
+    String      lastStudienElement  = "";
+    boolean     isSubScore          = false;
+    boolean     wpfFound            = false;
+    int[]       wpfWeight           = {0, 0};
+    int         wpfTreeLevel        = 0;
+    String      wpfTopic            = "";
+    float       score               = 0.0f;
+    readLine =  readLine.substring(readLine.indexOf("SysTreeLevel")+"SysTreeLevel".length());
+    int         indentLevel         = Integer.parseInt(readLine.substring(0,readLine.indexOf("'")));
+
     while(!(line = reader.readLine()).contains("SysTreeLevel"+indentLevel)){
-      if(line.contains("EmSE MobileMain Name")){
+      if(line.contains("strike")){
+        skipTo(reader, "</tr>");
+      }
+      if(line.contains("EmSE EmFlex Name")){
         if(line.contains("WPF")){
           wpfFound = true;
           wpfWeight = Extract.wpfWeight(line);
@@ -141,18 +135,26 @@ public class Syllabus{
           }
           String subject = Extract.syllabusSubject(line);
           int[] weight = new int[2];
-          int semester = findSemester(reader);
+          line = skipTo(reader, "pruefung PGew");
+          weight = Extract.syllabusWeight(line);
+
+          line = skipTo(reader, "pruefung RF");
+          int semester = Extract.semester(line);
           if(lastSemester < semester){
             lastSemester = semester;
           }
-          while(!(line = reader.readLine()).contains("PGew")){
-          }
-          weight = Extract.syllabusWeight(line);
+
+          line = skipTo(reader, "note GNote");
+          score = Extract.score(line);
+
           if(isSubScore){
-            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic, lastStudienElement);
+            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic, lastStudienElement, score);
+            if(syllabusMap.get(lastStudienElement).getSemester() == 0){
+              syllabusMap.get(lastStudienElement).setSemester(semester);
+            }
             isSubScore = false;
           }else{
-            syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic));
+            syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic, score));
             lastStudienElement = studienElement;
           }
         }else{
@@ -161,19 +163,25 @@ public class Syllabus{
             isSubScore = true;
           }
           String subject = Extract.syllabusSubject(line);
+
           int[] weight = new int[2];
-          int semester = findSemester(reader);
+          line = skipTo(reader, "pruefung PGew");
+          weight = Extract.syllabusWeight(line);
+
+          line = skipTo(reader, "pruefung RF");
+          int semester = Extract.semester(line);
           if(lastSemester < semester){
             lastSemester = semester;
           }
-          while(!(line = reader.readLine()).contains("PGew")){
-          }
-          weight = Extract.syllabusWeight(line);
+
+          line = skipTo(reader, "note GNote");
+          score = Extract.score(line);
+
           if(isSubScore){
-            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement);
+            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement, score);
             isSubScore = false;
           }else{
-            syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
+            syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, score));
             lastStudienElement = studienElement;
           }
         }
@@ -183,106 +191,38 @@ public class Syllabus{
     return true;
   }
   private boolean collectFinalSyllabus(BufferedReader reader, String line) throws IOException{
-    String lastStudienElement = "";
-    boolean isSubScore = false;
+    String  lastStudienElement = "";
+    boolean isSubScore         = false;
+    float   score              = 0.0f;
     while(!(line.contains("ControlsLegend"))){
-      if(line.contains("EmSE MobileMain Name")){
+      if(line.contains("EmSE EmFlex Name")){
         String studienElement = Extract.syllabusStudienElement(line);
         if(studienElement.contains(lastStudienElement) && lastStudienElement.length()>0){
           isSubScore = true;
         }
         String subject = Extract.syllabusSubject(line);
-        int semester = findSemester(reader);
-        if(semester < lastSemester){
-          semester = lastSemester + 1;
-        }
+
         int[] weight = new int[2];
-        while(!(line = reader.readLine()).contains("PGew")){
-        }
+        line = skipTo(reader, "PGew");
         weight = Extract.syllabusWeight(line);
+
+        line = skipTo(reader, "pruefung RF");
+        int semester = Extract.semester(line);
+        if(lastSemester < semester){
+          lastSemester = semester;
+        }
+
         if(isSubScore){
-          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement);
+          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement, score);
           isSubScore = false;
         }else{
-          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight));
+          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, score));
           lastStudienElement = studienElement;
         }
       }
       line = reader.readLine();
     }
     return true;
-  }
-  private void extractScores(InputStream input){
-    BufferedReader  reader         = new BufferedReader(new InputStreamReader(input));
-    String          line           = "";
-    String          studienElement = "";
-    String          subStuEl       = "";
-    int             attempts       = 0;
-    float           score          = 0;
-
-    try{
-      while((line = reader.readLine()) != null){
-        if(line.contains("EmMNR Element") && !line.contains("th")){
-          studienElement = Extract.studienElement(line);
-          if(studienElement.length()>4){
-            subStuEl = studienElement;
-            studienElement = subStuEl.substring(0,4);
-          }
-        }else if(line.contains("Em200 SveStatus") && !line.contains("th")){
-          score = Extract.score(line);
-          if(subStuEl.length()>0){
-            syllabusMap.get(studienElement).getSubScore().get(subStuEl).setScore(score);
-          }else{
-            syllabusMap.get(studienElement).setScore(score);
-          }
-
-        }else if(line.contains("Em150 Versuch SveStatus") && !line.contains("th")){
-          attempts = Extract.attempts(line);
-          if(subStuEl.length()>0){
-            syllabusMap.get(studienElement).getSubScore().get(subStuEl).setAttempts(attempts);
-          }else{
-            syllabusMap.get(studienElement).setAttempts(attempts);
-          }
-          subStuEl = "";
-        }
-      }
-      updateParentScore();
-      updateWpfCounter();
-    }catch(IOException e){
-      e.printStackTrace();
-    }
-  }
-  private void updateSemesters(){
-    for(Map.Entry<String, Score> entry: syllabusMap.entrySet()){
-      Score entryScore = entry.getValue();
-      if(entryScore.hasSubScore() && entryScore.getSemester() != 0){
-        for(Map.Entry<String,Score> subEntry: entryScore.getSubScore().entrySet()){
-          Score subScore = subEntry.getValue();
-          if(subScore.getSemester()==0){
-            subScore.setSemester(entryScore.getSemester());
-          }
-        }
-      }else if(entryScore.hasSubScore() && entryScore.getSemester() == 0){
-        for(Map.Entry<String,Score> subEntry: entryScore.getSubScore().entrySet()){
-          Score subScore = subEntry.getValue();
-          if(subScore.getSemester()!=0){
-            entryScore.setSemester(subScore.getSemester());
-          }
-        }
-      }
-    }
-  }
-  private void updateParentScore(){
-    for(Score score: syllabusMap.values()){
-      if(score.hasSubScore()){
-        float average = 0.0f;
-        for(Score subScore: score.getSubScore().values()){
-          average += (subScore.getScore()*subScore.getWeight()[0]/subScore.getWeight()[1]);
-        }
-        average = (float)((int)(average*10))/10;
-        score.setScore(average);
-      }
-    }
   }
   private float calculateAverage(Collection<Score> scoreSet){
     float average = 0.0f;
@@ -344,7 +284,7 @@ public class Syllabus{
     }
     return (float)((int)((average/denominator)*10))/10;
   }
-  public void createSyllabus(InputStream basicStream, InputStream syllabusStream, InputStream scoreStream) throws Exception{
+  public void createSyllabus(InputStream basicStream, InputStream syllabusStream) throws Exception{
     //is found on https://www.intranet.hs-mittweida.de/sportal/his/studenten/student.ablauf.asp?referer=&page_id=6529
     //Studentenportal -> Mein Studium -> Mein Studienablauf
     //Settings: Anzeigemodus -> Studienablaufplan
@@ -377,9 +317,13 @@ public class Syllabus{
       e.printStackTrace();
     }finally{
       updateSemesters();
-      extractScores(scoreStream);
       average = calculateAverage(syllabusMap.values());
-      User user = new User(name, course, fieldOfStudy, average);
+      float testAverage = 0.0f;
+      if(DataHandler.userfileExists()){
+        testAverage = DataHandler.getUser().getTestAverage();
+      }
+
+      User user = new User(name, course, fieldOfStudy, average, testAverage);
       DataHandler.run();
       DataHandler.writeSyllabus(syllabusMap);
       DataHandler.writeUser(user);
@@ -394,6 +338,32 @@ public class Syllabus{
 
 
   }
+  private String skipTo(BufferedReader reader, String string) throws IOException{
+    String line = "";
+    while(!(line = reader.readLine()).contains(string)){
+    }
+    return line;
+  }
+  private void updateSemesters(){
+    for(Map.Entry<String, Score> entry: syllabusMap.entrySet()){
+      Score entryScore = entry.getValue();
+      if(entryScore.hasSubScore() && entryScore.getSemester() != 0){
+        for(Map.Entry<String,Score> subEntry: entryScore.getSubScore().entrySet()){
+          Score subScore = subEntry.getValue();
+          if(subScore.getSemester()==0){
+            subScore.setSemester(entryScore.getSemester());
+          }
+        }
+      }else if(entryScore.hasSubScore() && entryScore.getSemester() == 0){
+        for(Map.Entry<String,Score> subEntry: entryScore.getSubScore().entrySet()){
+          Score subScore = subEntry.getValue();
+          if(subScore.getSemester()!=0){
+            entryScore.setSemester(subScore.getSemester());
+          }
+        }
+      }
+    }
+}
   public String getFieldOfStudy(){
     return this.fieldOfStudy;
   }
