@@ -13,7 +13,6 @@ public class Syllabus{
   private String name;
   private String course;
   private HashMap<String, Score> syllabusMap;
-  private int lastSemester;
   private float average;
 
   private void findStudyInformation(InputStream in){
@@ -60,7 +59,6 @@ public class Syllabus{
     }
   }
   private boolean collectMainSyllabus(BufferedReader reader) throws IOException{
-    lastSemester = 0;
     String line = "";
     String lastStudienElement = "";
     Float score = 0.0f;
@@ -80,18 +78,18 @@ public class Syllabus{
 
         line = skipTo(reader, "pruefung RF");
         int semester = Extract.semester(line);
-        if(lastSemester < semester){
-          lastSemester = semester;
-        }
+
+        line = skipTo(reader, "note PVAnz");
+        int attempt = Extract.attempts(line);
 
         line = skipTo(reader, "note GNote");
         score = Extract.score(line);
 
         if(isSubScore){
-          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement, score);
+          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement, score, attempt);
           isSubScore = false;
         }else{
-          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, score));
+          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, score, attempt));
           lastStudienElement = studienElement;
         }
       }
@@ -140,9 +138,6 @@ public class Syllabus{
 
           line = skipTo(reader, "pruefung RF");
           int semester = Extract.semester(line);
-          if(lastSemester < semester){
-            lastSemester = semester;
-          }
 
           line = skipTo(reader, "note GNote");
           score = Extract.score(line);
@@ -170,18 +165,18 @@ public class Syllabus{
 
           line = skipTo(reader, "pruefung RF");
           int semester = Extract.semester(line);
-          if(lastSemester < semester){
-            lastSemester = semester;
-          }
+
+          line = skipTo(reader, "note PVAnz");
+          int attempt = Extract.attempts(line);
 
           line = skipTo(reader, "note GNote");
           score = Extract.score(line);
 
           if(isSubScore){
-            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement, score);
+            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement, score, attempt);
             isSubScore = false;
           }else{
-            syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, score));
+            syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, score, attempt));
             lastStudienElement = studienElement;
           }
         }
@@ -208,15 +203,15 @@ public class Syllabus{
 
         line = skipTo(reader, "pruefung RF");
         int semester = Extract.semester(line);
-        if(lastSemester < semester){
-          lastSemester = semester;
-        }
+
+        line = skipTo(reader, "note PVAnz");
+        int attempt = Extract.attempts(line);
 
         if(isSubScore){
-          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement, score);
+          syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement, score, attempt);
           isSubScore = false;
         }else{
-          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, score));
+          syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, score, attempt));
           lastStudienElement = studienElement;
         }
       }
@@ -236,7 +231,7 @@ public class Syllabus{
     average = (float)((int)((average/denominator)*10))/10;
     return average;
   }
-  private void updateWpfCounter(){
+  /*private void updateWpfCounter(){
     User user = DataHandler.getUser();
     for(Score score: syllabusMap.values()){
       if(score.hasSubScore()){
@@ -259,21 +254,8 @@ public class Syllabus{
       }
     }
     DataHandler.writeUser(user);
-  }
-  private static void updateParentScore(HashMap<String, Score> syllabusMap){
-    for(Score score: syllabusMap.values()){
-      if(score.hasSubScore()){
-        float average = 0.0f;
-        for(Score subScore: score.getSubScore().values()){
-          average += (subScore.getScore()*subScore.getWeight()[0]/subScore.getWeight()[1]);
-        }
-        average = (float)((int)(average*10))/10;
-        syllabusMap.get(score.getStudienElement()).setScore(average);
-      }
-    }
-  }
+  }*/
   public static float updateAverage(HashMap<String, Score> syllabusMap){
-    updateParentScore(syllabusMap);
     float average = 0.0f;
     int denominator = 0;
     for(Score score: syllabusMap.values()){
@@ -283,6 +265,19 @@ public class Syllabus{
       }
     }
     return (float)((int)((average/denominator)*10))/10;
+  }
+  public static float updateParentScore(HashMap<String, Score> syllabusMap, Score score){
+    float parentAverage = 0.0f;
+    for(Map.Entry<String, Score> entry: syllabusMap.get(score.getParentStudienElement()).getSubScore().entrySet()){
+      parentAverage += entry.getValue().getScore() * entry.getValue().getWeight()[0] / entry.getValue().getWeight()[1];
+    }
+    parentAverage = (float)((int)((parentAverage)*10))/10;
+    return parentAverage;
+  }
+  public static void resetSubScores(HashMap<String, Score> syllabusMap, Score score){
+    for(Score subScore:syllabusMap.get(score.getStudienElement()).getSubScore().values()){
+      subScore.setScore(0.0f);
+    }
   }
   public void createSyllabus(InputStream basicStream, InputStream syllabusStream) throws Exception{
     //is found on https://www.intranet.hs-mittweida.de/sportal/his/studenten/student.ablauf.asp?referer=&page_id=6529
@@ -323,7 +318,7 @@ public class Syllabus{
         testAverage = DataHandler.getUser().getTestAverage();
       }
 
-      User user = new User(name, course, fieldOfStudy, average, testAverage);
+      User user = new User(name, course, fieldOfStudy, average, testAverage, calculateBestAverage(), calculateWorstAverage());
       DataHandler.run();
       DataHandler.writeSyllabus(syllabusMap);
       DataHandler.writeUser(user);
@@ -363,7 +358,32 @@ public class Syllabus{
         }
       }
     }
-}
+  }
+  private float calculateBestAverage(){
+    float average = 0.0f;
+    for(Score score: syllabusMap.values()){
+      if(score.getScore() != 0){
+        average += score.getScore() * score.getWeight()[0] / score.getWeight()[1];
+      }else{
+        average += 1 * score.getWeight()[0] / score.getWeight()[1];
+      }
+      average = (float)((int)((average)*10))/10;
+    }
+    return average;
+  }
+  private float calculateWorstAverage(){
+    float average = 0.0f;
+    for(Score score: syllabusMap.values()){
+      if(score.getScore() != 0){
+        average += score.getScore() * score.getWeight()[0] / score.getWeight()[1];
+      }else{
+        average += 4 * score.getWeight()[0] / score.getWeight()[1];
+      }
+      average = (float)((int)((average)*10))/10;
+    }
+    return average;
+  }
+
   public String getFieldOfStudy(){
     return this.fieldOfStudy;
   }

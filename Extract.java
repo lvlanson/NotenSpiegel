@@ -22,9 +22,13 @@ public class Extract{
     return score;
   }
   public static int attempts(String snippet){
+    int attempt = 0;
     snippet = snippet.substring(snippet.indexOf('>'));
     snippet = snippet.substring(1,snippet.indexOf('<'));
-    return Integer.parseInt(snippet);
+    if(snippet.matches(".*\\d.*")){
+      attempt = Integer.parseInt(snippet);
+    }
+    return attempt;
   }
 
   public static String fieldOfStudy(String snippet){

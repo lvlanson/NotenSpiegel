@@ -94,7 +94,9 @@ public class DataHandler{
     ObjectInputStream ois = null;
     try{
         ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(new File(syllabusPath))));
-        syllabusMap = (HashMap<String, Score>) ois.readObject();
+        @SuppressWarnings("unchecked")
+        HashMap<String, Score> read = (HashMap<String, Score>) ois.readObject();
+        syllabusMap = read;
     }catch(IOException e){
       e.printStackTrace();
     }catch(ClassNotFoundException e){
@@ -192,7 +194,9 @@ public class DataHandler{
     ObjectInputStream ois = null;
     try{
         ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(new File(testPath))));
-        testMap = (HashMap<String, Score>) ois.readObject();
+        @SuppressWarnings("unchecked")
+        HashMap<String, Score> read =(HashMap<String, Score>) ois.readObject();
+        testMap = read;
     }catch(IOException e){
       e.printStackTrace();
     }catch(ClassNotFoundException e){

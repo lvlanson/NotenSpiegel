@@ -23,7 +23,7 @@ public class Score implements Serializable{
 
   }
 
-  public Score(String studEl, String subject,int semester, int[] weight, float score){
+  public Score(String studEl, String subject,int semester, int[] weight, float score, int attempt){
     this.studienElement = studEl;
     this.subject = subject;
     this.weight = new int[2];
@@ -31,8 +31,9 @@ public class Score implements Serializable{
     this.weight[1] = weight[1];
     this.semester = semester;
     this.score = score;
+    this.attempts = attempt;
   }
-  public Score(String studEl, String subject,int semester, int[] weight, String parentStudienElement, float score){
+  public Score(String studEl, String subject,int semester, int[] weight, String parentStudienElement, float score, int attempt){
     this.studienElement = studEl;
     this.subject = subject;
     this.weight = new int[2];
@@ -42,6 +43,7 @@ public class Score implements Serializable{
     this.parentStudienElement = parentStudienElement;
     this.hasParentScore = true;
     this.score = score;
+    this.attempts = attempt;
   }
   public Score(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic, float score){
     this.studienElement = studEl;
@@ -142,13 +144,13 @@ public class Score implements Serializable{
     this.weight[0] = denominator;
     this.weight[1] = numerator;
   }
-  public void setSubScore(String studEl, String subject,int semester, int[] weight, String parentStudienElement, float score){
+  public void setSubScore(String studEl, String subject,int semester, int[] weight, String parentStudienElement, float score, int attempt){
     if(!hasSubScore){
       this.subScore = new HashMap<String, Score>();
-      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, parentStudienElement, score));
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, parentStudienElement, score, attempt));
       this.setSubScore();
     }else{
-      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, parentStudienElement, score));
+      this.subScore.put(studEl, new Score(studEl, subject, semester, weight, parentStudienElement, score, attempt));
     }
   }
   public void setSubScore(String studEl, String subject, int semester, int[] weight, boolean isWpf, int[] wpfWeight, String wpfTopic, String parentStudienElement, float score){

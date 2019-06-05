@@ -79,7 +79,7 @@ public class Visual{
     welcomePanel.addComponent(new Button("Note testen", new Runnable(){
       @Override
       public void run(){
-        createTestScreen();
+        createTestScreen(0);
       }
     }));
     welcomePanel.addComponent(new Button("Notentester Zurücksetzen", new Runnable(){
@@ -168,7 +168,9 @@ public class Visual{
             scoreString = "" + scoreSet.getScore();
           }
           String attemptsString;
-          if(scoreSet.getAttempts()==0){
+          if(scoreSet.hasSubScore()){
+            attemptsString = "";
+          }else if(scoreSet.getAttempts()==0){
             attemptsString = "-";
           }else{
             attemptsString = "" + scoreSet.getAttempts();
@@ -192,9 +194,9 @@ public class Visual{
     }
   }
   private void drawWpf(HashMap<String, ArrayList<Score>> sortedMap, Panel notenPanel){
-    Iterator it = sortedMap.entrySet().iterator();
+    Iterator<Map.Entry<String,ArrayList<Score>>> it = sortedMap.entrySet().iterator();
     while(it.hasNext()){
-      Map.Entry<String, ArrayList<Score>> pair = (Map.Entry)it.next();
+      Map.Entry<String, ArrayList<Score>> pair = it.next();
       String wpfTopic = pair.getKey();
       ArrayList<Score> wpfList = pair.getValue();
       Label heading = new Label("\t" + wpfTopic + "("+wpfList.get(0).getWpfWeight()[0]+" aus "+wpfList.get(0).getWpfWeight()[1]+")");
@@ -276,12 +278,12 @@ public class Visual{
     notenPanel.addComponent(durchschnitt);
     notenPanel.addComponent(note);
   }
-  private void createTestScreen(){
+  private void createTestScreen(int focus){
     if(!DataHandler.testfileExists()){
       DataHandler.createTestfile();
       DataHandler.createTestWpfCounter();
     }
-    final Window window = new BasicWindow("Notenliste");
+    final BasicWindow window = new BasicWindow("Notenliste");
     Panel notenPanel = new Panel(new GridLayout(3));
     Label head1 = new Label("Fach");
     Label head2 = new Label("Versuch");
@@ -295,7 +297,7 @@ public class Visual{
     HashMap<String, Score> testMap = DataHandler.getTestMap();
     User user = DataHandler.getUser();
     HashMap<Integer, ArrayList<Score>> sortedMap = sortSemester(testMap);
-    drawTestSemesters(sortedMap, notenPanel, 1, testMap);
+    drawTestSemesters(window, sortedMap, notenPanel, 1, testMap, 0);
     drawTestAverage(notenPanel);
     Button exit = new Button("Exit", new Runnable(){
       @Override
@@ -305,9 +307,15 @@ public class Visual{
     });
     notenPanel.addComponent(exit);
     window.setComponent(notenPanel);
-    textGUI.addWindowAndWait(window);
+    textGUI.addWindow(window);
+    window.setFocusedInteractable(setFocus(notenPanel, focus));
   }
-  private void drawTestSemesters(HashMap<Integer, ArrayList<Score>> sortedMap, Panel notenPanel, int indent, HashMap<String,Score> testMap){
+  private int drawTestSemesters(Window window,
+                                 HashMap<Integer, ArrayList<Score>> sortedMap,
+                                 Panel notenPanel,
+                                 int indent,
+                                 HashMap<String,Score> testMap,
+                                 int boxCount){
     for(int i = 0; i<=sortedMap.size(); i++){
       HashMap<String,ArrayList<Score>> wpfMap = new HashMap<String, ArrayList<Score>>();
       Label heading = null;
@@ -357,24 +365,32 @@ public class Visual{
           ComboBox<String> scoreBox   = createScoreComboBox(scoreSet.hasSubScore());
           Label            attempts   = new Label(attemptsString);
           scoreBox.setReadOnly(true)
-                  .addListener(changeScoreEvent(scoreSet, testMap, scoreBox));
+                  .addListener(changeScoreEvent(window, scoreSet, testMap, scoreBox, boxCount));
           notenPanel.addComponent(subject);
           notenPanel.addComponent(attempts);
+
           if(!scoreString.contains("-")){
             scoreBox.removeListener(changeScoreEventListener);
             scoreBox.setSelectedItem(scoreString);
             scoreBox.addListener(changeScoreEventListener);
           }
           notenPanel.addComponent(scoreBox);
+          boxCount++;
           if(scoreSet.hasSubScore()){
-            drawTestScores(scoreSet.getSubScore(), notenPanel, indent+1, testMap);
+            boxCount = drawTestScores(window, scoreSet.getSubScore(), notenPanel, indent+1, testMap, boxCount);
           }
         }
-        drawTestWpf(wpfMap, notenPanel, testMap);
+        boxCount = drawTestWpf(window, wpfMap, notenPanel, testMap, boxCount);
       }
     }
+    return boxCount;
   }
-  private void drawTestScores(HashMap<String, Score> scoreSet, Panel notenPanel, int indent, HashMap<String, Score> testMap){
+  private int drawTestScores(Window window,
+                              HashMap<String, Score> scoreSet,
+                              Panel notenPanel,
+                              int indent,
+                              HashMap<String, Score> testMap,
+                              int boxCount){
     for(Map.Entry<String,Score> subMap: scoreSet.entrySet()){
       final Score subSet = subMap.getValue();
       String scoreSubString;
@@ -397,7 +413,7 @@ public class Visual{
       ComboBox<String> scoreBox    = createScoreComboBox(subSet.hasSubScore());
       Label            subAttempts = new Label(attemptsSubString);
       scoreBox.setReadOnly(true)
-              .addListener(changeScoreEvent(subSet, testMap, scoreBox));
+              .addListener(changeScoreEvent(window, subSet, testMap, scoreBox,boxCount));
       notenPanel.addComponent(subSubject);
       notenPanel.addComponent(subAttempts);
       if(!scoreSubString.contains("-")){
@@ -406,12 +422,19 @@ public class Visual{
         scoreBox.addListener(changeScoreEventListener);
       }
       notenPanel.addComponent(scoreBox);
+      boxCount++;
     }
+    return boxCount;
   }
-  private void drawTestWpf(HashMap<String, ArrayList<Score>> sortedMap, Panel notenPanel, HashMap<String, Score> testMap){
-    Iterator it = sortedMap.entrySet().iterator();
+  private int drawTestWpf(Window window,
+                           HashMap<String,
+                           ArrayList<Score>> sortedMap,
+                           Panel notenPanel,
+                           HashMap<String, Score> testMap,
+                           int boxCount){
+    Iterator<Map.Entry<String,ArrayList<Score>>> it = sortedMap.entrySet().iterator();
     while(it.hasNext()){
-      Map.Entry<String, ArrayList<Score>> pair = (Map.Entry)it.next();
+      Map.Entry<String, ArrayList<Score>> pair = it.next();
       String wpfTopic = pair.getKey();
       ArrayList<Score> wpfList = pair.getValue();
       Label heading = new Label("\t" + wpfTopic + "("+wpfList.get(0).getWpfWeight()[0]+" aus "+wpfList.get(0).getWpfWeight()[1]+")");
@@ -441,7 +464,7 @@ public class Visual{
         Label subject           = new Label(tabs + scoreSet.getSubject());
         ComboBox<String> scoreBox  = createScoreComboBox(scoreSet.hasSubScore());
         scoreBox.setReadOnly(true)
-                .addListener(changeScoreEvent(scoreSet, testMap, scoreBox));
+                .addListener(changeScoreEvent(window, scoreSet, testMap, scoreBox, boxCount));
         Label attempts       = new Label(attemptsString);
         notenPanel.addComponent(subject);
         notenPanel.addComponent(attempts);
@@ -454,9 +477,11 @@ public class Visual{
         if(scoreSet.hasSubScore()){
           drawScores(scoreSet.getSubScore(), notenPanel, 3);
         }
+        boxCount++;
       }
       it.remove();
     }
+    return boxCount;
   }
   private void drawTestAverage(Panel notenPanel){
     Label durchschnitt = new Label("Durchschnitt: ");
@@ -544,8 +569,8 @@ public class Visual{
   }
   private HashMap<Integer, ArrayList<Score>> sortSemester(HashMap<String, Score> syllabusMap){
     HashMap <Integer, ArrayList<Score>> sorted = new HashMap<Integer, ArrayList<Score>>();
-    for(Map.Entry score: syllabusMap.entrySet()){
-      Score value = (Score) score.getValue();
+    for(Map.Entry<String,Score> score: syllabusMap.entrySet()){
+      Score value = score.getValue();
       ArrayList<Score> scoreList = null;
       if(sorted.get(value.getSemester()) == null){
         scoreList = new ArrayList<Score>();
@@ -566,13 +591,15 @@ public class Visual{
     }
     return scoreBox;
   }
-  private ComboBox.Listener changeScoreEvent(Score score, HashMap<String, Score> testMap, ComboBox<String> scoreBox){
+  private ComboBox.Listener changeScoreEvent(Window window, Score score, HashMap<String, Score> testMap, ComboBox<String> scoreBox, int boxCount){
+
     changeScoreEventListener = new ComboBox.Listener(){
       @Override public void onSelectionChanged(int selectedIndex, int previousSelection){
           if(!score.isWpf()){
             updateTestScore(score, testMap, scoreBox, selectedIndex, previousSelection);
             DataHandler.updateTestMap(testMap);
             DataHandler.updateTestAverage(Syllabus.updateAverage(testMap));
+
           }else{
             if(updateTestWpf(selectedIndex, previousSelection, score.getWpfTopic(), score)){
               updateTestScore(score, testMap, scoreBox, selectedIndex, previousSelection);
@@ -592,9 +619,11 @@ public class Visual{
                                               "Achtung", "Du kannst maximal " + score.getWpfWeight()[0]
                                               + " " + module +" in " + score.getWpfTopic() + "auswählen!"
                                               , MessageDialogButton.OK);
-              scoreBox.addListener(changeScoreEvent(score, testMap, scoreBox));
+              scoreBox.addListener(changeScoreEvent(window, score, testMap, scoreBox, boxCount));
             }
           }
+          window.close();
+          createTestScreen(boxCount);
         }
       };
       return changeScoreEventListener;
@@ -659,9 +688,13 @@ public class Visual{
         testMap.get(score.getParentStudienElement()).getSubScore().get(score.getStudienElement()).setIsTested();
         testMap.get(score.getParentStudienElement()).setIsTested();
         testMap.get(score.getParentStudienElement()).getSubScore().get(score.getStudienElement()).setScore(testScore);
+        testMap.get(score.getParentStudienElement()).setScore(Syllabus.updateParentScore(testMap, score));
       }else{
         testMap.get(score.getStudienElement()).setIsTested();
         testMap.get(score.getStudienElement()).setScore(testScore);
+      }
+      if(score.hasSubScore()){
+        Syllabus.resetSubScores(testMap, score);
       }
     }else if(selectedIndex != previousSelection){
       float testScore = 0.0f;
@@ -670,8 +703,12 @@ public class Visual{
       }
       if(score.hasParentScore()){
         testMap.get(score.getParentStudienElement()).getSubScore().get(score.getStudienElement()).setScore(testScore);
+        testMap.get(score.getParentStudienElement()).setScore(Syllabus.updateParentScore(testMap, score));
       }else{
         testMap.get(score.getStudienElement()).setScore(testScore);
+      }
+      if(score.hasSubScore()){
+        Syllabus.resetSubScores(testMap, score);
       }
     }
   }
@@ -683,6 +720,7 @@ public class Visual{
     TextBox userText          = new TextBox();
     TextBox passwordText      = new TextBox();
     GridLayout gridLayout = (GridLayout) panel.getLayoutManager();
+    updateWindow.setPosition(new TerminalPosition(0,0));
     gridLayout.setHorizontalSpacing(4);
     passwordText.setMask('*');
     userText.setPreferredSize(new TerminalSize(25,1));
@@ -715,7 +753,7 @@ public class Visual{
           MessageDialog.showMessageDialog(textGUI, "Ups", "Passwort vielleicht falsch?");
         }catch(Exception e){
           MessageDialog.showMessageDialog(textGUI, "Ups", "Etwas ist schief gegangen");
-          //e.printStackTrace();
+          e.printStackTrace();
         }
 
         updateWindow.close();
@@ -723,7 +761,22 @@ public class Visual{
     }));
     updateWindow.setComponent(panel);
     textGUI.addWindowAndWait(updateWindow);
-    updateWindow.setSize(new TerminalSize(650,650));
-    updateWindow.setPosition(new TerminalPosition(0,0));
+
+  }
+  private ComboBox<String> setFocus(Panel panel, int focus){
+    int i = 0;
+    Collection<Component> components= panel.getChildren();
+    ComboBox<String> focusBox = null;
+    for(Component component: components){
+      if(component instanceof ComboBox<?> && i == focus){
+        @SuppressWarnings("unchecked")
+        ComboBox<String> box = (ComboBox<String>)component;
+        focusBox = box;
+        break;
+      }else if(component instanceof ComboBox<?>){
+        i++;
+      }
+    }
+    return focusBox;
   }
 }

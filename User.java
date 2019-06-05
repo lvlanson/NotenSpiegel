@@ -8,15 +8,19 @@ public class User implements Serializable{
   private String fieldOfStudy;
   private float average;
   private float testAverage;
+  private float bestAverage;
+  private float worstAverage;
   private HashMap<String, Integer> wpfCounter;
   private HashMap<String, Integer> testWpfCounter;
 
-  public User(String name, String course, String fieldOfStudy, float average, float testAverage){
+  public User(String name, String course, String fieldOfStudy, float average, float testAverage, float bestAverage, float worstAverage){
     this.name = name;
     this.course = course;
     this.fieldOfStudy = fieldOfStudy;
     this.average = average;
     this.testAverage = testAverage;
+    this.bestAverage = bestAverage;
+    this.worstAverage = worstAverage;
   }
   public void increaseWpfCounter(String wpfTopic){
     wpfCounter.put(wpfTopic, wpfCounter.get(wpfTopic)+1);
@@ -36,6 +40,12 @@ public class User implements Serializable{
   }
   public void setAverage(float average){
     this.average = average;
+  }
+  public void setBestAverage(float bestAverage){
+    this.bestAverage = bestAverage;
+  }
+  public void setWorstAverage(float worstAverage){
+    this.worstAverage = worstAverage;
   }
   public void setTestAverage(float testAverage){
     this.testAverage = testAverage;
@@ -70,5 +80,11 @@ public class User implements Serializable{
   }
   public HashMap<String, Integer> getTestWpfCounter(){
     return this.testWpfCounter;
+  }
+  public float getBestAverage(){
+    return bestAverage;
+  }
+  public float getWorstAverage(){
+    return worstAverage;
   }
 }
