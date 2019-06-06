@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Arrays;
 import java.net.MalformedURLException;
 
 
@@ -59,12 +60,15 @@ public class Visual{
       e.printStackTrace();
     }
   }
-  private void createWelcomeWindow(){
+  private void createWelcomeWindows(){
     String surname = DataHandler.getSurname();
     if(surname.length() != 0){
       surname = " " + surname;
     }
-    final Window window = new BasicWindow("Willkommen"+surname+"!");
+
+    final Window menueWindow = new BasicWindow("Willkommen"+surname+"!");
+    final Window averageWindow = new BasicWindow("Durchschnitte");
+    Panel averagePanel = new Panel(new LinearLayout(Direction.VERTICAL));
     Panel welcomePanel = new Panel(new LinearLayout(Direction.VERTICAL));
     welcomePanel.addComponent(new Label("Was möchtest du gerne tun?"));
     welcomePanel.addComponent(new Button("Noten anzeigen", new Runnable(){
@@ -91,7 +95,7 @@ public class Visual{
     welcomePanel.addComponent(new Button("Noten updaten", new Runnable(){
       @Override
       public void run(){
-        updateData();
+        updateData(menueWindow, averageWindow);
       }
     }));
     welcomePanel.addComponent(new Button("Exit", new Runnable(){
@@ -100,11 +104,28 @@ public class Visual{
         close();
       }
     }));
-    window.setComponent(welcomePanel);
-    textGUI.addWindowAndWait(window);
+    Label average = new Label("Durchschnitt: " + DataHandler.getUser().getAverage());
+    Label bestAverage = new Label("Beste Endnote: " + DataHandler.getUser().getBestAverage());
+    Label worstAverage = new Label("Schlechteste Endnote: " + DataHandler.getUser().getWorstAverage());
+    averagePanel.addComponent(average);
+    averagePanel.addComponent(bestAverage);
+    averagePanel.addComponent(worstAverage);
+    averageWindow.setComponent(averagePanel);
+    averageWindow.setHints(Arrays.asList(Window.Hint.FIXED_POSITION, Window.Hint.NO_FOCUS, Window.Hint.FIXED_SIZE));
+    menueWindow.setComponent(welcomePanel);
+    textGUI.addWindow(menueWindow);
+    TerminalSize menueSize = menueWindow.getDecoratedSize();
+    TerminalPosition averagePos = new TerminalPosition(1, menueSize.getRows()+2);
+    TerminalSize averageSize = new TerminalSize(menueSize.getColumns()-2, 3);
+    averageWindow.setPosition(averagePos);
+    averageWindow.setSize(averageSize);
+    textGUI.addWindowAndWait(averageWindow);
+
   }
   private void createScoreScreen(){
     final Window window = new BasicWindow("Notenliste");
+    window.setHints(Arrays.asList(Window.Hint.FIXED_POSITION));
+    window.setPosition(new TerminalPosition(0,0));
     Panel notenPanel = new Panel(new GridLayout(3));
     Label head1 = new Label("Fach");
     Label head2 = new Label("Versuch");
@@ -131,7 +152,6 @@ public class Visual{
     textGUI.addWindowAndWait(window);
   }
   private void drawSemesters(HashMap<Integer, ArrayList<Score>> sortedMap, Panel notenPanel, int indent){
-    System.out.println(sortedMap.size());
     for(int i = 0; i<=sortedMap.size(); i++){
       HashMap<String,ArrayList<Score>> wpfMap = new HashMap<String, ArrayList<Score>>();
       Label heading = null;
@@ -284,6 +304,8 @@ public class Visual{
       DataHandler.createTestWpfCounter();
     }
     final BasicWindow window = new BasicWindow("Notenliste");
+    window.setHints(Arrays.asList(Window.Hint.FIXED_POSITION));
+    window.setPosition(new TerminalPosition(0,0));
     Panel notenPanel = new Panel(new GridLayout(3));
     Label head1 = new Label("Fach");
     Label head2 = new Label("Versuch");
@@ -546,10 +568,10 @@ public class Visual{
     try{
       screen.startScreen();
       if(DataHandler.mainfileExists()){
-        createWelcomeWindow();
+        createWelcomeWindows();
       }else{
-        updateData();
-        createWelcomeWindow();
+        updateData(null, null);
+        createWelcomeWindows();
       }
 
     }catch(IOException e){
@@ -560,7 +582,6 @@ public class Visual{
     if(screen != null){
       try{
         screen.stopScreen();
-        System.out.println("");
         System.exit(0);
       }catch(IOException e){
         e.printStackTrace();
@@ -712,7 +733,11 @@ public class Visual{
       }
     }
   }
-  private void updateData(){
+  private void updateData(Window menueWindow, Window averageWindow){
+    if(menueWindow != null && averageWindow != null){
+      menueWindow.close();
+      averageWindow.close();
+    }
     final Window updateWindow = new BasicWindow("Login");
     Panel   panel             = new Panel(new GridLayout(2));
     Label   userLabel         = new Label("HSMW-Username:");
@@ -736,6 +761,9 @@ public class Visual{
       @Override
       public void run(){
         updateWindow.close();
+        if(menueWindow != null && averageWindow != null){
+          createWelcomeWindows();
+        }
       }
     }));
     panel.addComponent(new Button("Okay", new Runnable(){
@@ -753,12 +781,16 @@ public class Visual{
           MessageDialog.showMessageDialog(textGUI, "Ups", "Passwort vielleicht falsch?");
         }catch(Exception e){
           MessageDialog.showMessageDialog(textGUI, "Ups", "Etwas ist schief gegangen");
-          e.printStackTrace();
+          //e.printStackTrace();
+        }finally{
+          updateWindow.close();
+          if(menueWindow != null && averageWindow != null){
+            createWelcomeWindows();
+          }
         }
-
-        updateWindow.close();
       }
     }));
+    updateWindow.setHints(Arrays.asList(Window.Hint.CENTERED));
     updateWindow.setComponent(panel);
     textGUI.addWindowAndWait(updateWindow);
 

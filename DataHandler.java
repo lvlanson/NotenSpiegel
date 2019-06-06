@@ -172,6 +172,9 @@ public class DataHandler{
       syllabusMap = getSyllabus();
       oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(testFile)));
       oos.writeObject(syllabusMap);
+      User user = getUser();
+      user.setTestAverage(user.getAverage());
+      writeUser(user);
     }catch(IOException e){
       e.printStackTrace();
     }finally{
@@ -240,34 +243,9 @@ public class DataHandler{
     File file = new File(userPath);
     User user = null;
     if(!file.exists()){
-      ObjectInputStream ois = null;
-      ObjectOutputStream oos = null;
-      try{
-        ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(userPath)));
-        user = (User) ois.readObject();
-        user.setTestWpfCounter(user.getWpfCounter());
-        oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(userPath)));
-        oos.writeObject(user);
-      }catch(IOException e){
-        e.printStackTrace();
-      }catch(ClassNotFoundException e){
-        e.printStackTrace();
-      }finally{
-        if(ois != null){
-          try{
-            ois.close();
-          }catch(IOException e){
-            e.printStackTrace();
-          }
-        }
-        if(oos != null){
-          try{
-            ois.close();
-          }catch(IOException e){
-            e.printStackTrace();
-          }
-        }
-      }
+      user = getUser();
+      user.setTestWpfCounter(user.getWpfCounter());
+      writeUser(user);
     }
   }
   public static void removeTestFile(){

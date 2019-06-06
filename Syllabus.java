@@ -231,8 +231,7 @@ public class Syllabus{
     average = (float)((int)((average/denominator)*10))/10;
     return average;
   }
-  /*private void updateWpfCounter(){
-    User user = DataHandler.getUser();
+  private void updateWpfCounter(User user){
     for(Score score: syllabusMap.values()){
       if(score.hasSubScore()){
         for(Score subScore: score.getSubScore().values()){
@@ -254,7 +253,7 @@ public class Syllabus{
       }
     }
     DataHandler.writeUser(user);
-  }*/
+  }
   public static float updateAverage(HashMap<String, Score> syllabusMap){
     float average = 0.0f;
     int denominator = 0;
@@ -318,7 +317,10 @@ public class Syllabus{
         testAverage = DataHandler.getUser().getTestAverage();
       }
 
-      User user = new User(name, course, fieldOfStudy, average, testAverage, calculateBestAverage(), calculateWorstAverage());
+      User user = new User(name, course, fieldOfStudy, average, testAverage,
+                           calculateBestAverage(syllabusMap),
+                           calculateWorstAverage(syllabusMap));
+      updateWpfCounter(user);
       DataHandler.run();
       DataHandler.writeSyllabus(syllabusMap);
       DataHandler.writeUser(user);
@@ -359,28 +361,35 @@ public class Syllabus{
       }
     }
   }
-  private float calculateBestAverage(){
+  private float calculateBestAverage(HashMap<String, Score> syllabusMap){
     float average = 0.0f;
+    int numerator = 0;
+    int denominator = 0;
     for(Score score: syllabusMap.values()){
       if(score.getScore() != 0){
+        numerator+=score.getWeight()[0];
         average += score.getScore() * score.getWeight()[0] / score.getWeight()[1];
-      }else{
-        average += 1 * score.getWeight()[0] / score.getWeight()[1];
       }
-      average = (float)((int)((average)*10))/10;
+      denominator = score.getWeight()[1];
     }
+    average += ((float)(denominator-numerator)*1.0f)/denominator;
+    System.out.println(average);
+    average = (float)((int)((average)*10))/10;
     return average;
   }
-  private float calculateWorstAverage(){
+  private float calculateWorstAverage(HashMap<String, Score> syllabusMap){
     float average = 0.0f;
+    int numerator = 0;
+    int denominator = 0;
     for(Score score: syllabusMap.values()){
       if(score.getScore() != 0){
+        numerator+=score.getWeight()[0];
         average += score.getScore() * score.getWeight()[0] / score.getWeight()[1];
-      }else{
-        average += 4 * score.getWeight()[0] / score.getWeight()[1];
       }
-      average = (float)((int)((average)*10))/10;
+      denominator = score.getWeight()[1];
     }
+    average += ((float)(denominator-numerator)*4.0f)/denominator;
+    average = (float)((int)((average)*10))/10;
     return average;
   }
 

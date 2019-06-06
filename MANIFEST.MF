@@ -1,0 +1,5 @@
+Mainfest-Version: 1.0
+Created-By: Thomas Davies
+Class-Path: lanterna-3.0.1.jar junit-4.12.jar
+Main-Class: Notenspiegel
+
