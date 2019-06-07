@@ -779,9 +779,10 @@ public class Visual{
           MessageDialog.showMessageDialog(textGUI, "Ups", "Das Lesen oder Schreiben ist schief gegangen");
         }catch(StringIndexOutOfBoundsException e){
           MessageDialog.showMessageDialog(textGUI, "Ups", "Passwort vielleicht falsch?");
+          e.printStackTrace();
         }catch(Exception e){
           MessageDialog.showMessageDialog(textGUI, "Ups", "Etwas ist schief gegangen");
-          //e.printStackTrace();
+          e.printStackTrace();
         }finally{
           updateWindow.close();
           if(menueWindow != null && averageWindow != null){

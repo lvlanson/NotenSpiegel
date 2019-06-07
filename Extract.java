@@ -79,7 +79,11 @@ public class Extract{
     return wpfWeight;
   }
   public static String wpfTopic(String snippet){
-    snippet = snippet.substring(snippet.lastIndexOf("WPF ")+"WPF ".length(), snippet.lastIndexOf('('));
+    if(snippet.contains("WPF ")){
+      snippet = snippet.substring(snippet.lastIndexOf("WPF ")+"WPF ".length(), snippet.lastIndexOf('('));
+    }else{
+      snippet = snippet.substring(snippet.lastIndexOf("Spezialisierung "), snippet.lastIndexOf('('));
+    }
     snippet = snippet.trim();
     return snippet;
   }

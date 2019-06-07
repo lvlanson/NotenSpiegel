@@ -14,6 +14,7 @@ public class Syllabus{
   private String course;
   private HashMap<String, Score> syllabusMap;
   private float average;
+  private boolean fieldOfStudyFound = false;
 
   private void findStudyInformation(InputStream in){
     //is found on https://www.intranet.hs-mittweida.de/sportal/his/studenten/student.info.asp?referer=&page_id=6527
@@ -22,7 +23,6 @@ public class Syllabus{
     try{
       reader = new BufferedReader(new InputStreamReader(in));
       String  line              = "";
-      boolean fieldOfStudyFound = false;
       boolean nameFound         = false;
       boolean courseFound       = false;
 
@@ -114,6 +114,96 @@ public class Syllabus{
       }
       if(line.contains("EmSE EmFlex Name")){
         if(line.contains("WPF")){
+          wpfFound = true;
+          wpfWeight = Extract.wpfWeight(line);
+          wpfTopic = Extract.wpfTopic(line);
+          continue;
+        }
+        if(wpfFound && wpfTreeLevel>Extract.level(line) && Extract.syllabusStudienElement(line).length()<=4){
+          wpfFound = false;
+          wpfTreeLevel = 0;
+        }
+        if(wpfFound){
+          if(Extract.syllabusStudienElement(line).length() <= 4){
+            wpfTreeLevel = Extract.level(line);
+          }
+          String studienElement = Extract.syllabusStudienElement(line);
+          if(studienElement.contains(lastStudienElement) && lastStudienElement.length()>0){
+            isSubScore = true;
+          }
+          String subject = Extract.syllabusSubject(line);
+          int[] weight = new int[2];
+          line = skipTo(reader, "pruefung PGew");
+          weight = Extract.syllabusWeight(line);
+
+          line = skipTo(reader, "pruefung RF");
+          int semester = Extract.semester(line);
+
+          line = skipTo(reader, "note GNote");
+          score = Extract.score(line);
+
+          if(isSubScore){
+            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic, lastStudienElement, score);
+            if(syllabusMap.get(lastStudienElement).getSemester() == 0){
+              syllabusMap.get(lastStudienElement).setSemester(semester);
+            }
+            isSubScore = false;
+          }else{
+            syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, true, wpfWeight, wpfTopic, score));
+            lastStudienElement = studienElement;
+          }
+        }else{
+          String studienElement = Extract.syllabusStudienElement(line);
+          if(studienElement.contains(lastStudienElement) && lastStudienElement.length()>0){
+            isSubScore = true;
+          }
+          String subject = Extract.syllabusSubject(line);
+
+          int[] weight = new int[2];
+          line = skipTo(reader, "pruefung PGew");
+          weight = Extract.syllabusWeight(line);
+
+          line = skipTo(reader, "pruefung RF");
+          int semester = Extract.semester(line);
+
+          line = skipTo(reader, "note PVAnz");
+          int attempt = Extract.attempts(line);
+
+          line = skipTo(reader, "note GNote");
+          score = Extract.score(line);
+
+          if(isSubScore){
+            syllabusMap.get(lastStudienElement).setSubScore(studienElement, subject, semester, weight, lastStudienElement, score, attempt);
+            isSubScore = false;
+          }else{
+            syllabusMap.put(studienElement, new Score(studienElement, subject, semester, weight, score, attempt));
+            lastStudienElement = studienElement;
+          }
+        }
+
+      }
+    }
+    return true;
+  }
+  private boolean collectCompleteSyllabus(BufferedReader reader, String readLine) throws IOException{
+    String      line                = "";
+    String      lastStudienElement  = "";
+    boolean     isSubScore          = false;
+    boolean     wpfFound            = false;
+    int[]       wpfWeight           = {0, 0};
+    int         wpfTreeLevel        = 0;
+    String      wpfTopic            = "";
+    float       score               = 0.0f;
+    readLine =  readLine.substring(readLine.indexOf("SysTreeLevel")+"SysTreeLevel".length());
+    int         indentLevel         = Integer.parseInt(readLine.substring(0,readLine.indexOf("'")));
+
+    while(!(line = reader.readLine()).contains("SysTreeLevel"+indentLevel) && !(line = reader.readLine()).contains("/table")){
+
+      if(line.contains("strike")){
+        skipTo(reader, "</tr>");
+      }
+      if(line.contains("EmSE EmFlex Name")){
+        if(line.contains("WPF") || line.contains("Spezialisierung")){
           wpfFound = true;
           wpfWeight = Extract.wpfWeight(line);
           wpfTopic = Extract.wpfTopic(line);
@@ -284,9 +374,6 @@ public class Syllabus{
     //Settings: Anzeigemodus -> Studienablaufplan
     //          Ausgabe reduzieren -> auf Noten reduziert
     findStudyInformation(basicStream);
-    if(fieldOfStudy == null){
-      throw new Exception("Couldn't find field of study information");
-    }
     syllabusMap = new HashMap<String, Score>();
     BufferedReader reader = null;
     try{
@@ -296,15 +383,25 @@ public class Syllabus{
       boolean isMainSyllabusDone = false;
       boolean isSpecialSyllabusDone = false;
       boolean isFinalSyllabusDone = false;
-      while(((line = reader.readLine()) != null)){
-        if(!isMainSyllabusDone && line.contains(this.course)){
-          isMainSyllabusDone = collectMainSyllabus(reader);
-        }else if(!isSpecialSyllabusDone && (line.contains(this.fieldOfStudy))){
-          isSpecialSyllabusDone = collectSpecialSyllabus(reader, line);
-        }else if(isSpecialSyllabusDone && !isFinalSyllabusDone && (line.contains("SysTreeLevel1"))){
-          isFinalSyllabusDone = collectFinalSyllabus(reader, line);
-        }else if(isSpecialSyllabusDone && isMainSyllabusDone && isFinalSyllabusDone){
-          break;
+      if(fieldOfStudyFound){
+        while(((line = reader.readLine()) != null)){
+          if(!isMainSyllabusDone && line.contains(this.course)){
+            isMainSyllabusDone = collectMainSyllabus(reader);
+          }else if(!isSpecialSyllabusDone && (line.contains(this.fieldOfStudy))){
+            isSpecialSyllabusDone = collectSpecialSyllabus(reader, line);
+          }else if(isSpecialSyllabusDone && !isFinalSyllabusDone && (line.contains("SysTreeLevel1"))){
+            isFinalSyllabusDone = collectFinalSyllabus(reader, line);
+          }else if(isSpecialSyllabusDone && isMainSyllabusDone && isFinalSyllabusDone){
+            break;
+          }
+        }
+      }else{
+        while(((line = reader.readLine()) != null)){
+          if(!isSpecialSyllabusDone && line.contains(this.course)){
+            isSpecialSyllabusDone = collectCompleteSyllabus(reader, line);
+          }else if(isSpecialSyllabusDone){
+            break;
+          }
         }
       }
     }catch(IOException e){
@@ -366,14 +463,16 @@ public class Syllabus{
     int numerator = 0;
     int denominator = 0;
     for(Score score: syllabusMap.values()){
-      if(score.getScore() != 0){
+      if(score.getScore() == 5.0f){
+        numerator+=score.getWeight()[0];
+        average += 1.0 * score.getWeight()[0] / score.getWeight()[1];
+      }else if(score.getScore() != 0){
         numerator+=score.getWeight()[0];
         average += score.getScore() * score.getWeight()[0] / score.getWeight()[1];
-      }
+      } 
       denominator = score.getWeight()[1];
     }
     average += ((float)(denominator-numerator)*1.0f)/denominator;
-    System.out.println(average);
     average = (float)((int)((average)*10))/10;
     return average;
   }
@@ -382,11 +481,15 @@ public class Syllabus{
     int numerator = 0;
     int denominator = 0;
     for(Score score: syllabusMap.values()){
-      if(score.getScore() != 0){
+      if(score.getScore() == 5.0){
+        System.out.println("Jup");
+        numerator+=score.getWeight()[0];
+        average += 4.0 * score.getWeight()[0] / score.getWeight()[1];
+      }else if(score.getScore() != 0){
         numerator+=score.getWeight()[0];
         average += score.getScore() * score.getWeight()[0] / score.getWeight()[1];
-      }
       denominator = score.getWeight()[1];
+      }
     }
     average += ((float)(denominator-numerator)*4.0f)/denominator;
     average = (float)((int)((average)*10))/10;
