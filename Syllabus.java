@@ -203,7 +203,7 @@ public class Syllabus{
         skipTo(reader, "</tr>");
       }
       if(line.contains("EmSE EmFlex Name")){
-        if(line.contains("WPF") || line.contains("Spezialisierung")){
+        if(line.contains("WPF") || line.contains("Spezialisierung") || line.contains("Wahlpflicht")){
           wpfFound = true;
           wpfWeight = Extract.wpfWeight(line);
           wpfTopic = Extract.wpfTopic(line);
@@ -469,7 +469,7 @@ public class Syllabus{
       }else if(score.getScore() != 0){
         numerator+=score.getWeight()[0];
         average += score.getScore() * score.getWeight()[0] / score.getWeight()[1];
-      } 
+      }
       denominator = score.getWeight()[1];
     }
     average += ((float)(denominator-numerator)*1.0f)/denominator;
@@ -482,7 +482,6 @@ public class Syllabus{
     int denominator = 0;
     for(Score score: syllabusMap.values()){
       if(score.getScore() == 5.0){
-        System.out.println("Jup");
         numerator+=score.getWeight()[0];
         average += 4.0 * score.getWeight()[0] / score.getWeight()[1];
       }else if(score.getScore() != 0){

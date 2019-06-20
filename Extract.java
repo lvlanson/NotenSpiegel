@@ -26,6 +26,7 @@ public class Extract{
     snippet = snippet.substring(snippet.indexOf('>'));
     snippet = snippet.substring(1,snippet.indexOf('<'));
     if(snippet.matches(".*\\d.*")){
+      snippet = snippet.replaceAll("\\D+","");
       attempt = Integer.parseInt(snippet);
     }
     return attempt;
@@ -81,8 +82,12 @@ public class Extract{
   public static String wpfTopic(String snippet){
     if(snippet.contains("WPF ")){
       snippet = snippet.substring(snippet.lastIndexOf("WPF ")+"WPF ".length(), snippet.lastIndexOf('('));
-    }else{
+    }else if(snippet.contains("WPF ")){
       snippet = snippet.substring(snippet.lastIndexOf("Spezialisierung "), snippet.lastIndexOf('('));
+    }else if(snippet.contains("Wahlpflicht_")){
+      snippet = snippet.substring(snippet.lastIndexOf("Wahlpflicht_")+"Wahlpflicht_".length(), snippet.lastIndexOf('('));
+    }else{
+      snippet = snippet.substring(snippet.lastIndexOf("Wahlpflicht ")+"Wahlpflicht ".length(), snippet.lastIndexOf('('));
     }
     snippet = snippet.trim();
     return snippet;
