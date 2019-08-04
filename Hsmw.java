@@ -15,11 +15,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
-//Diese Klasse verwaltet alle Operationen mit der HSMW Webseite
+
+/**
+ * Die Klasse Hsmw verwaltet alle Operationen mit der HSMW Webseite
+ * @author Thomas Davies
+ * @version 1.0
+ */
+
 public class Hsmw{
   private static final String syllabus = "https://www.intranet.hs-mittweida.de/sportal/his/studenten/student.ablauf.asp";
   private static final String basisDaten = "https://www.intranet.hs-mittweida.de/sportal/his/studenten/student.info.asp";
 
+
+  /**
+   * Erzeugt den Modulplan über die Verbindung zur Webseite der Hochschule Mittweida. Dort werden über den Studienablaufplan des Studenten alle Daten zum Modulplan und
+   * über die Seite zu den Basisinformationen alle Informationen zum User abgerufen. Diese werden dann in eine Datei geschrieben und dem Programm damit verfügbar gemacht.
+   * @param username Ist der Loginname des Studenten
+   * @param password Ist das Passwort des Studenten
+   * @exception MalformedURLException Wird zurückgegeben, wenn etwas mit der URL nicht funktioniert hat.
+   * @exception IOException Wenn einer der Streams einen Fehler verursacht.
+   * @exception StringIndexOutOfBoundsException Wird verursacht, wenn beim Extrahieren von Daten aus den HTML Zeilen etwas schief gegangen ist.
+   * @exception Exception Soll alle anderen Arten von Exceptions für alle Fälle enthalten.
+   */
 
   public static void createDataFromHSMW(String username, String password)throws MalformedURLException, IOException, StringIndexOutOfBoundsException, Exception{
       ArrayList<InputStream> streams = getInputStreams(username, password);
@@ -27,6 +44,15 @@ public class Hsmw{
       s.createSyllabus(streams.get(0), streams.get(1));
   }
 
+  /**
+   * Diese Methode durchläuft den Prozess des Einloggens auf die Hochschulseite.
+   * @param username Ist der Loginname des Studenten
+   * @param password Ist das Passwort des Studenten
+   * @exception MalformedURLException Wird zurückgegeben, wenn etwas mit der URL nicht funktioniert hat.
+   * @exception IOException Wenn einer der Streams einen Fehler verursacht.
+   * @exception StringIndexOutOfBoundsException Wird verursacht, wenn beim Extrahieren von Daten aus den HTML Zeilen etwas schief gegangen ist.
+   * @return Gibt die benötigten Streams zum Auslesen der Seiten als Arrayliste zurück.
+   */
   private static ArrayList<InputStream> getInputStreams(String username, String password) throws MalformedURLException, IOException, StringIndexOutOfBoundsException{
 		// Request initial page
     ArrayList<InputStream> inputstreams = new ArrayList<InputStream>();
@@ -137,7 +163,14 @@ public class Hsmw{
     return inputstreams;
 
   }
-
+  /**
+   * Diese Methode gibt die Antwort des Servers in Form eines Response Objekts zurück.
+   * @param url Ist die aufgerufene URL.
+   * @param params Ist eine Map mit den Parametern des Aufrufs.
+   * @param cookies Sind die Cookies des Aufrufs
+   * @exception IOException Wird bei einem Fehler bei den Ein- und Ausgabe Operationen verursacht.
+   * @return Gibt eine Antwort des Servers in Form eines Response Objekts zurück.
+   */
   private static Response getDocument(URL url, Map<String, String> params, String cookies) throws IOException
 	{
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -162,16 +195,6 @@ public class Hsmw{
 			}
 		}
 
-//		connection.addRequestProperty("user-agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3650.1 Iron Safari/537.36");
-		/*System.out.println("Response-Code:\n\t" + connection.getResponseCode() + " (" + connection.getResponseMessage() + ")");
-		for (Map.Entry<String, List<String>> headerEntry : connection.getHeaderFields().entrySet()){
-			System.out.println(headerEntry.getKey() + ":");
-			for (String value : headerEntry.getValue()){
-				System.out.println("\t" + value);
-			}
-		}*/
-
-		// Inhalt holen
 		StringBuilder builder = new StringBuilder();
 		try (Scanner s = new Scanner(connection.getInputStream())){
 			while (s.hasNext()){
@@ -180,6 +203,12 @@ public class Hsmw{
 
 		return new Response(builder.toString(), connection.getHeaderFields(), connection.getURL());
 	}
+  /**
+   * Holt die Postdaten aus den Parametern, welche in der Map gespeichert sind, und gibt diese als Byte Array zurück.
+   * @param params Sind die Parameter des Aufrufs.
+   * @return Gibt die Postdaten als Byte Array zurück.
+   * @throws UnsupportedEncodingException Gibt Fehler über ein Encoding Exception aus.
+   */
   private static byte[] getPostData(Map<String, String> params) throws UnsupportedEncodingException{
 		StringBuilder postDataBuilder = new StringBuilder();
 		for (Map.Entry<String, String> param : params.entrySet()){
