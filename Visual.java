@@ -36,6 +36,7 @@ import java.io.ObjectInputStream;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.EOFException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
@@ -920,15 +921,42 @@ public class Visual{
         try{
           Hsmw.createDataFromHSMW(username, password);
         }catch(MalformedURLException e){
+          PrintWriter writer = null;
+          try{
+            writer = new PrintWriter("error.txt");
+            writer.write(e.toString());
+            e.printStackTrace(writer);
+            writer.close();
+          }catch(IOException ex){}
           MessageDialog.showMessageDialog(textGUI, "Ups", "Konnte die Internetseite nicht finden");
+
         }catch(IOException e){
           MessageDialog.showMessageDialog(textGUI, "Ups", "Das Lesen oder Schreiben ist schief gegangen");
+          PrintWriter writer = null;
+          try{
+            writer = new PrintWriter("error.txt");
+            writer.write(e.toString());
+            e.printStackTrace(writer);
+            writer.close();
+          }catch(IOException ex){}
         }catch(StringIndexOutOfBoundsException e){
           MessageDialog.showMessageDialog(textGUI, "Ups", "Passwort vielleicht falsch?");
-          e.printStackTrace();
+          PrintWriter writer = null;
+          try{
+            writer = new PrintWriter("error.txt");
+            writer.write(e.toString());
+            e.printStackTrace(writer);
+            writer.close();
+          }catch(IOException ex){}
         }catch(Exception e){
           MessageDialog.showMessageDialog(textGUI, "Ups", "Etwas ist schief gegangen");
-          e.printStackTrace();
+          PrintWriter writer = null;
+          try{
+            writer = new PrintWriter("error.txt");
+            writer.write(e.toString());
+            e.printStackTrace(writer);
+            writer.close();
+          }catch(IOException ex){}
         }finally{
           updateWindow.close();
           if(menueWindow != null && averageWindow != null){

@@ -14,6 +14,7 @@ public class User implements Serializable{
   private String name;
   private String course;
   private String fieldOfStudy;
+  private String credentials;
   private float average;
   private float testAverage;
   private float bestAverage;
@@ -30,7 +31,7 @@ public class User implements Serializable{
    * @param bestAverage Ist der noch bestmöglichste Durchschnitt.
    * @param worstAverage Ist der noch schlechtmöglichste Durchschnitt.
    */
-  public User(String name, String course, String fieldOfStudy, float average, float testAverage, float bestAverage, float worstAverage){
+  public User(String name, String course, String fieldOfStudy, float average, float testAverage, float bestAverage, float worstAverage, String credentials){
     this.name = name;
     this.course = course;
     this.fieldOfStudy = fieldOfStudy;
@@ -38,6 +39,7 @@ public class User implements Serializable{
     this.testAverage = testAverage;
     this.bestAverage = bestAverage;
     this.worstAverage = worstAverage;
+    this.credentials = credentials;
   }
   /**
    * Erhöht den Wahlpflichtcounter um 1.
@@ -118,6 +120,20 @@ public class User implements Serializable{
    */
   public void createTestWpfCounter(){
     this.testWpfCounter = new HashMap<String, Integer>();
+  }
+  /**
+   * Hinterlegt den Loginnamen des Users, damit überprüft werden kann, ob diesem die Daten aus dem Notentester entsprechen.
+   * @param credentials Ist der Hochschul-Login Name.
+   */
+  public void setCredentials(String credentials){
+    this.credentials = credentials;
+  }
+  /**
+   * Gibt den Hochschul-Login Name zurück.
+   * @return Gibt Hochschul-Login Name zurück.
+   */
+  public String getCredentials(){
+    return this.credentials;
   }
   /**
    * Gibt Namen des Users zurück.

@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.BufferedOutputStream;
@@ -48,13 +49,25 @@ public class DataHandler{
       oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(syllabusFile)));
       oos.writeObject(syllabusMap);
     }catch(IOException e){
-      e.printStackTrace();
+      PrintWriter writer = null;
+      try{
+        writer = new PrintWriter("error.txt");
+        writer.write(e.toString());
+        e.printStackTrace(writer);
+        writer.close();
+      }catch(IOException ex){}
     }finally{
       if(oos != null){
         try{
           oos.close();
         }catch(IOException e){
-          e.printStackTrace();
+          PrintWriter writer = null;
+          try{
+            writer = new PrintWriter("error.txt");
+            writer.write(e.toString());
+            e.printStackTrace(writer);
+            writer.close();
+          }catch(IOException ex){}
         }
       }
     }
@@ -71,13 +84,25 @@ public class DataHandler{
       oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(userFile)));
       oos.writeObject(user);
     }catch(IOException e){
-      e.printStackTrace();
+      PrintWriter writer = null;
+      try{
+        writer = new PrintWriter("error.txt");
+        writer.write(e.toString());
+        e.printStackTrace(writer);
+        writer.close();
+      }catch(IOException ex){}
     }finally{
       if(oos != null){
         try{
           oos.close();
         }catch(IOException e){
-          e.printStackTrace();
+          PrintWriter writer = null;
+          try{
+            writer = new PrintWriter("error.txt");
+            writer.write(e.toString());
+            e.printStackTrace(writer);
+            writer.close();
+          }catch(IOException ex){}
         }
       }
     }
@@ -97,15 +122,33 @@ public class DataHandler{
         String name = user.getName();
         surname = name.substring(name.indexOf(',')+2);
       }catch(IOException e){
-        e.printStackTrace();
+        PrintWriter writer = null;
+        try{
+          writer = new PrintWriter("error.txt");
+          writer.write(e.toString());
+          e.printStackTrace(writer);
+          writer.close();
+        }catch(IOException ex){}
       }catch(ClassNotFoundException e){
-        e.printStackTrace();
+        PrintWriter writer = null;
+        try{
+          writer = new PrintWriter("error.txt");
+          writer.write(e.toString());
+          e.printStackTrace(writer);
+          writer.close();
+        }catch(IOException ex){}
       }finally{
         if(ois != null){
           try{
             ois.close();
           }catch(IOException e){
-            e.printStackTrace();
+            PrintWriter writer = null;
+            try{
+              writer = new PrintWriter("error.txt");
+              writer.write(e.toString());
+              e.printStackTrace(writer);
+              writer.close();
+            }catch(IOException ex){}
           }
         }
       }
@@ -125,15 +168,33 @@ public class DataHandler{
         HashMap<String, Score> read = (HashMap<String, Score>) ois.readObject();
         syllabusMap = read;
     }catch(IOException e){
-      e.printStackTrace();
+      PrintWriter writer = null;
+      try{
+        writer = new PrintWriter("error.txt");
+        writer.write(e.toString());
+        e.printStackTrace(writer);
+        writer.close();
+      }catch(IOException ex){}
     }catch(ClassNotFoundException e){
-      e.printStackTrace();
+      PrintWriter writer = null;
+      try{
+        writer = new PrintWriter("error.txt");
+        writer.write(e.toString());
+        e.printStackTrace(writer);
+        writer.close();
+      }catch(IOException ex){}
     }finally{
       if(ois != null){
         try{
           ois.close();
         }catch(IOException e){
-          e.printStackTrace();
+          PrintWriter writer = null;
+          try{
+            writer = new PrintWriter("error.txt");
+            writer.write(e.toString());
+            e.printStackTrace(writer);
+            writer.close();
+          }catch(IOException ex){}
         }
       }
     }
@@ -149,18 +210,36 @@ public class DataHandler{
     if(file.exists()){
       ObjectInputStream ois = null;
       try{
-        ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(userPath)));
+        ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
         user = (User) ois.readObject();
       }catch(IOException e){
-        e.printStackTrace();
+        PrintWriter writer = null;
+        try{
+          writer = new PrintWriter("error.txt");
+          writer.write(e.toString());
+          e.printStackTrace(writer);
+          writer.close();
+        }catch(IOException ex){}
       }catch(ClassNotFoundException e){
-        e.printStackTrace();
+        PrintWriter writer = null;
+        try{
+          writer = new PrintWriter("error.txt");
+          writer.write(e.toString());
+          e.printStackTrace(writer);
+          writer.close();
+        }catch(IOException ex){}
       }finally{
         if(ois != null){
           try{
             ois.close();
           }catch(IOException e){
-            e.printStackTrace();
+            PrintWriter writer = null;
+            try{
+              writer = new PrintWriter("error.txt");
+              writer.write(e.toString());
+              e.printStackTrace(writer);
+              writer.close();
+            }catch(IOException ex){}
           }
         }
       }
@@ -222,17 +301,26 @@ public class DataHandler{
       user.setTestAverage(user.getAverage());
       writeUser(user);
     }catch(IOException e){
-      e.printStackTrace();
+      PrintWriter writer = null;
+      try{
+        writer = new PrintWriter("error.txt");
+        writer.write(e.toString());
+        e.printStackTrace(writer);
+        writer.close();
+      }catch(IOException ex){}
     }finally{
       try{
         if(oos != null){
           oos.close();
         }
       }catch(IOException e){
-
-
-
-        e.printStackTrace();
+        PrintWriter writer = null;
+        try{
+          writer = new PrintWriter("error.txt");
+          writer.write(e.toString());
+          e.printStackTrace(writer);
+          writer.close();
+        }catch(IOException ex){}
       }
       User user = getUser();
       user.setTestAverage(user.getAverage());
@@ -251,15 +339,33 @@ public class DataHandler{
         HashMap<String, Score> read =(HashMap<String, Score>) ois.readObject();
         testMap = read;
     }catch(IOException e){
-      e.printStackTrace();
+      PrintWriter writer = null;
+      try{
+        writer = new PrintWriter("error.txt");
+        writer.write(e.toString());
+        e.printStackTrace(writer);
+        writer.close();
+      }catch(IOException ex){}
     }catch(ClassNotFoundException e){
-      e.printStackTrace();
+      PrintWriter writer = null;
+      try{
+        writer = new PrintWriter("error.txt");
+        writer.write(e.toString());
+        e.printStackTrace(writer);
+        writer.close();
+      }catch(IOException ex){}
     }finally{
       if(ois != null){
         try{
           ois.close();
         }catch(IOException e){
-          e.printStackTrace();
+          PrintWriter writer = null;
+          try{
+            writer = new PrintWriter("error.txt");
+            writer.write(e.toString());
+            e.printStackTrace(writer);
+            writer.close();
+          }catch(IOException ex){}
         }
       }
     }
@@ -277,14 +383,26 @@ public class DataHandler{
       oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(testFile)));
       oos.writeObject(testMap);
     }catch(IOException e){
-      e.printStackTrace();
+      PrintWriter writer = null;
+      try{
+        writer = new PrintWriter("error.txt");
+        writer.write(e.toString());
+        e.printStackTrace(writer);
+        writer.close();
+      }catch(IOException ex){}
     }finally{
       try{
         if(oos != null){
           oos.close();
         }
       }catch(IOException e){
-        e.printStackTrace();
+        PrintWriter writer = null;
+        try{
+          writer = new PrintWriter("error.txt");
+          writer.write(e.toString());
+          e.printStackTrace(writer);
+          writer.close();
+        }catch(IOException ex){}
       }
     }
   }

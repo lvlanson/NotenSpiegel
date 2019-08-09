@@ -41,7 +41,7 @@ public class Hsmw{
   public static void createDataFromHSMW(String username, String password)throws MalformedURLException, IOException, StringIndexOutOfBoundsException, Exception{
       ArrayList<InputStream> streams = getInputStreams(username, password);
       Syllabus s = new Syllabus();
-      s.createSyllabus(streams.get(0), streams.get(1));
+      s.createSyllabus(streams.get(0), streams.get(1), username);
   }
 
   /**

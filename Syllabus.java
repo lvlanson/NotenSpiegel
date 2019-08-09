@@ -3,6 +3,7 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Collection;
@@ -56,13 +57,25 @@ public class Syllabus{
 
       }
     }catch(IOException e){
-      e.printStackTrace();
+      PrintWriter writer = null;
+      try{
+        writer = new PrintWriter("error.txt");
+        writer.write(e.toString());
+        e.printStackTrace(writer);
+        writer.close();
+      }catch(IOException ex){}
     }finally{
       if(reader != null){
         try{
           reader.close();
         }catch(IOException e){
-          e.printStackTrace();
+          PrintWriter writer = null;
+          try{
+            writer = new PrintWriter("error.txt");
+            writer.write(e.toString());
+            e.printStackTrace(writer);
+            writer.close();
+          }catch(IOException ex){}
         }
       }
     }
@@ -415,6 +428,10 @@ public class Syllabus{
   public static float updateParentScore(HashMap<String, Score> syllabusMap, Score score){
     float parentAverage = 0.0f;
     for(Map.Entry<String, Score> entry: syllabusMap.get(score.getParentStudienElement()).getSubScore().entrySet()){
+      if(entry.getValue().getScore() == 0.0){
+        parentAverage = 0.0f;
+        break;
+      }
       parentAverage += entry.getValue().getScore() * entry.getValue().getWeight()[0] / entry.getValue().getWeight()[1];
     }
     parentAverage = (float)((int)((parentAverage)*10))/10;
@@ -436,12 +453,18 @@ public class Syllabus{
    * @param syllabusStream Enthält den Stream zur Seite auf der HSMW Seite mit dem Modulplan.
    * @throws IOException Wird von divsersion In- und Output Operationen geworfen und an die aufrufende Methode weitergegeben.
    */
-  public void createSyllabus(InputStream basicStream, InputStream syllabusStream) throws IOException{
+  public void createSyllabus(InputStream basicStream, InputStream syllabusStream, String username) throws IOException{
+    if(DataHandler.userfileExists()){
+      User updateUser = DataHandler.getUser();
+      if(!username.equals(updateUser.getCredentials())){
+        DataHandler.removeTestFile();
+      }
+    }
+
     findStudyInformation(basicStream);
     syllabusMap = new HashMap<String, Score>();
     BufferedReader reader = null;
     try{
-
       reader = new BufferedReader(new InputStreamReader(syllabusStream));
       String line = "";
       boolean isMainSyllabusDone = false;
@@ -469,7 +492,13 @@ public class Syllabus{
         }
       }
     }catch(IOException e){
-      e.printStackTrace();
+      PrintWriter writer = null;
+      try{
+        writer = new PrintWriter("error.txt");
+        writer.write(e.toString());
+        e.printStackTrace(writer);
+        writer.close();
+      }catch(IOException ex){}
     }finally{
       updateSemesters();
       average = calculateAverage(syllabusMap.values());
@@ -480,7 +509,8 @@ public class Syllabus{
 
       User user = new User(name, course, fieldOfStudy, average, testAverage,
                            calculateBestAverage(syllabusMap),
-                           calculateWorstAverage(syllabusMap));
+                           calculateWorstAverage(syllabusMap),
+                           username);
       updateWpfCounter(user);
       DataHandler.run();
       DataHandler.writeSyllabus(syllabusMap);
@@ -489,7 +519,13 @@ public class Syllabus{
         try{
           reader.close();
         }catch(IOException e){
-          e.printStackTrace();
+          PrintWriter writer = null;
+          try{
+            writer = new PrintWriter("error.txt");
+            writer.write(e.toString());
+            e.printStackTrace(writer);
+            writer.close();
+          }catch(IOException ex){}
         }
       }
     }
