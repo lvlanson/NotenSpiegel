@@ -19,8 +19,7 @@ public class Score implements Serializable{
   private boolean hasParentScore = false;
 
   /**
-   * Die Klasse Syllabus enthält alle Funktionen um von der HSMW Seite alle möglichen Module und die Basisinformationen eines Studenten
-   * herunterzuladen. Diese Daten werden in den globalen Variablen der Klasse gespeichert.
+   * Die Klasse Score enthält alle Informationen, die für ein Modul aufgenommen werden können.
    * @author Thomas Davies
    * @version 1.0
   */
